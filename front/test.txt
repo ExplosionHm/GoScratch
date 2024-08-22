@@ -6,21 +6,7 @@ import (
 
 func main() {
   /*@INSERT start*/
-w := CreateWindow(screen, "GoScratch", 400, 600)
-defer w.Release()
-screenBuffer := screenNewBuffer(rect)
-if err != nil {
-log.Fatalf("%v - failed to create screen buffer", err)
-}
-defer screenBuffer.Release()
 
-w := CreateWindow(screen, "GoScratch", 400, 600)
-defer w.Release()
-screenBuffer := screenNewBuffer(rect)
-if err != nil {
-log.Fatalf("%v - failed to create screen buffer", err)
-}
-defer screenBuffer.Release()
 
   test.Test()
 }
