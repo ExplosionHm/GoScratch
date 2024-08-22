@@ -1,0 +1,13 @@
+{
+  "CreateWindow": {
+    "args": [
+      "*Screen",
+      "string",
+      "int",
+      "int"
+    ],
+    "tails": [
+      "defer %s.Release()"
+    ]
+  }
+}
