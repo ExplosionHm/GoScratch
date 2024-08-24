@@ -17,14 +17,7 @@ func main() {
 
 func Game() {
 	/*@INSERT start*/
-windows := scratch.CreateWindow("GoScratch", 1024, 768, true)
-windows.SetSmooth(true)
-s := scratch.CreateSprite("images/gopher.png")
-
 	for !windows.Closed() {
-		/*@INSERT loop*/
-s.Draw(windows, pixel.IM.Moved(windows.MousePosition()))
-windows.Update()
-
+		/*@INSERT loop*/ 
 	}
 }

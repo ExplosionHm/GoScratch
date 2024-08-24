@@ -1,5 +1,5 @@
 declare type load = {
-  parent?: string;
+  parents?: [];
   id: string;
   uid: string;
   args: any[];

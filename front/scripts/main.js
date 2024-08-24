@@ -27,35 +27,69 @@ const asset = {
     bool: (v) => {
       return Boolean(v);
     },
+    WindowConfig: {
+      parent: "pixelgl",
+    },
   },
   CreateWindow: {
-    args: ["*Screen", "string", "int", "int"],
-    tails: ["defer %s.Release()"],
+    args: ["string", "int", "int", "bool"],
+    tails: [],
   },
-  NewBuffer: {
-    tails: [
-      "if err != nil {",
-      'log.Fatalf("%v - failed to create screen buffer", err)',
-      "}",
-      "defer %s.Release()",
-    ],
+  SetSmooth: {
+    args: ["bool"],
+    tails: [],
+  },
+  CreateSprite: {
+    args: ["string"],
+    tails: [],
+  },
+  Draw: {
+    args: ["target", "matrix"],
+    tails: [],
+  },
+  Update: {
+    args: [],
+    tails: [],
   },
 };
 
-const p = [
-  //global parents: "pixel", "pixelgl"
-  {
-    id: "CreateWindow",
-    uid: "w",
-    args: ["screen", '"GoScratch"', 400, 600],
-  },
-  {
-    parent: "screen",
-    id: "NewBuffer",
-    uid: "screenBuffer",
-    args: ["rect"],
-  },
-];
+const p = {
+  /**@type {load[]} */
+  start: [
+    //global parents: "pixel", "pixelgl"
+    {
+      parents: ["scratch"],
+      assign_type: "append", //! add appending
+      id: "CreateWindow",
+      uid: "windows",
+      args: ['"GoScratch"', 1024, 768, true],
+    },
+    {
+      parents: ["windows"],
+      id: "SetSmooth",
+      args: [true],
+    },
+    {
+      parents: ["scratch"],
+      id: "CreateSprite",
+      uid: "s",
+      args: ['"images/gopher.png"'],
+    },
+  ],
+  /**@type {load[]} */
+  loop: [
+    {
+      parents: ["s"],
+      id: "Draw",
+      args: ["windows", "pixel.IM.Moved(windows.MousePosition())"],
+    },
+    {
+      parents: ["windows"],
+      id: "Update",
+      args: [],
+    },
+  ],
+};
 
 /**
  * @param {load[]} payload
@@ -65,7 +99,10 @@ function parse(payload) {
   for (const load of payload) {
     const h = asset[load.id];
     if (!h) continue;
-    out += `${load.uid} := ${load.parent || ""}${load.id}`;
+    let parents;
+    parents = load.parents.join(".") + ".";
+    if (load.uid) out += `${load.uid} := `;
+    out += `${parents || ""}${load.id}`;
     out += `(${load.args.join(", ")})`;
     for (const tail of h.tails) {
       out += `\n${tail.replace("%s", load.uid)}`;
@@ -75,18 +112,23 @@ function parse(payload) {
   return out;
 }
 
-(() => {
+(async () => {
   const file = fs.readFileSync("front/test.txt", {
     encoding: "utf8",
   });
 
   if (!file) throw new Error();
 
-  let out = "";
-  const target = "/*@INSERT start*/";
-  const pos = file.indexOf(target) + target.length;
-  if (target.length > pos) return;
-  out =
-    file.slice(0, pos) + "\n" + String(parse(p)) + file.slice(pos, file.length);
+  let out = file;
+  for (const [id, value] of Object.entries(p)) {
+    const target = `/*@INSERT ${id}*/`;
+    const pos = out.indexOf(target) + target.length;
+    if (target.length > pos) return;
+    out =
+      out.slice(0, pos) +
+      "\n" +
+      String(parse(value)) +
+      out.slice(pos, out.length);
+  }
   fs.writeFileSync("front/test.txt", out);
 })();
