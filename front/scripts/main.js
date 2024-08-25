@@ -1,4 +1,5 @@
 import fs from "fs";
+import { exec } from "child_process";
 
 const asset = {
   "+types": {
@@ -112,7 +113,20 @@ function parse(payload) {
   return out;
 }
 
-(async () => {
+function runGoProgram(goFilePath) {
+  try {
+  } catch (err) {
+    console.error("Execution failed:", err);
+    return false;
+  }
+}
+
+// Usage
+const goFilePath = "C:/Users/sandn/Documents/Projects/goscratch/back/main.go";
+const success = runGoProgram(goFilePath);
+console.log(`Program ran successfully: ${success}`);
+
+async () => {
   const file = fs.readFileSync("front/test.txt", {
     encoding: "utf8",
   });
@@ -131,4 +145,4 @@ function parse(payload) {
       out.slice(pos, out.length);
   }
   fs.writeFileSync("front/test.txt", out);
-})();
+}; //! add () back to start running again

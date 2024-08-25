@@ -4,3 +4,5 @@ declare type load = {
   uid: string;
   args: any[];
 };
+
+declare type cmd = [string, string[]];
