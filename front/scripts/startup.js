@@ -60,23 +60,6 @@ function runCmds(...cmds) {
   });
 }
 
-function runExe(exePath) {
-  const process = child_process.spawn(exePath, [], {
-    shell: true,
-  });
-  process.stdout.on("data", (data) => {
-    console.log(`stdout: ${data}`);
-  });
-
-  process.stderr.on("data", (data) => {
-    console.error(`stderr: ${data}`);
-  });
-
-  process.on("close", (code) => {
-    console.log(`Child process exited with code ${code}`);
-  });
-}
-
 ipcMain.on("run", (_) => {
   runCmds([
     "C:/Users/sandn/Documents/Projects/goscratch/back/run.bat",
@@ -89,4 +72,8 @@ ipcMain.on("compile", (_) => {
     "C:/Users/sandn/Documents/Projects/goscratch/back/compile.bat",
     ["C:/Users/sandn/Documents/Projects/goscratch/back/main.go"],
   ]);
+});
+
+ipcMain.on("runCompiled", (_) => {
+  runCmds(["C:/Users/sandn/Documents/Projects/goscratch/back/main.exe", []]);
 });

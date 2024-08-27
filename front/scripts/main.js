@@ -60,7 +60,7 @@ const p = {
     //global parents: "pixel", "pixelgl"
     {
       parents: ["scratch"],
-      assign_type: "append", //! add appending
+      assignType: "append", //! add appending
       id: "CreateWindow",
       uid: "windows",
       args: ['"GoScratch"', 1024, 768, true],
@@ -113,20 +113,7 @@ function parse(payload) {
   return out;
 }
 
-function runGoProgram(goFilePath) {
-  try {
-  } catch (err) {
-    console.error("Execution failed:", err);
-    return false;
-  }
-}
-
-// Usage
-const goFilePath = "C:/Users/sandn/Documents/Projects/goscratch/back/main.go";
-const success = runGoProgram(goFilePath);
-console.log(`Program ran successfully: ${success}`);
-
-async () => {
+(async () => {
   const file = fs.readFileSync("front/test.txt", {
     encoding: "utf8",
   });
@@ -145,4 +132,4 @@ async () => {
       out.slice(pos, out.length);
   }
   fs.writeFileSync("front/test.txt", out);
-}; //! add () back to start running again
+})();
