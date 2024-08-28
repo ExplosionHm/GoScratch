@@ -14,6 +14,10 @@ func main() {
 	pixelgl.Run(Game)
 }
 
+var (
+	test = ""
+)
+
 func Game() {
 	/*@INSERT start*/
 	windows := scratch.CreateWindow("GoScratch", 1024, 768, true)

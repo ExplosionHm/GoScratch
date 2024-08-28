@@ -28,9 +28,6 @@ const asset = {
     bool: (v) => {
       return Boolean(v);
     },
-    WindowConfig: {
-      parent: "pixelgl",
-    },
   },
   CreateWindow: {
     args: ["string", "int", "int", "bool"],
@@ -54,43 +51,51 @@ const asset = {
   },
 };
 
-const p = {
-  /**@type {load[]} */
-  start: [
-    //global parents: "pixel", "pixelgl"
-    {
-      parents: ["scratch"],
-      assignType: "append", //! add appending
-      id: "CreateWindow",
-      uid: "windows",
-      args: ['"GoScratch"', 1024, 768, true],
-    },
-    {
-      parents: ["windows"],
-      id: "SetSmooth",
-      args: [true],
-    },
-    {
-      parents: ["scratch"],
-      id: "CreateSprite",
-      uid: "s",
-      args: ['"images/gopher.png"'],
-    },
-  ],
-  /**@type {load[]} */
-  loop: [
-    {
-      parents: ["s"],
-      id: "Draw",
-      args: ["windows", "pixel.IM.Moved(windows.MousePosition())"],
-    },
-    {
-      parents: ["windows"],
-      id: "Update",
-      args: [],
-    },
-  ],
-};
+class GoScratch {
+  /**
+   * @param {Import[]} imports
+   * @param {Defintion[]} defintions
+   * @param {Block[]} blocks
+   */
+  constructor(imports, defintions, blocks) {
+    this.imports = imports;
+    this.defintions = defintions;
+    this.blocks = blocks;
+  }
+  /**
+   * @returns {string}
+   */
+  getImports() {
+    let out = "";
+    for (const Import of this.imports) {
+      out += `${Import.implements ? "_" : ""}"${Import.url}"\n`;
+    }
+    return out;
+  }
+  /**
+   * @returns {string}
+   */
+  getDefintions() {
+    let out = "";
+    let value = "";
+    for (const defintion of this.defintions) {
+      if (!defintion.type) {
+        if (!defintion.value) value = "any";
+        else value = `= `;
+      }
+      //! TODO
+      //if only type then just put the type
+      //if only value then just put " = value"
+      //if both type and value then try converting value to said type
+      out += `${defintion.id} ${defintion.type}\n`;
+    }
+    return out;
+  }
+  /**
+   * @returns {string}
+   */
+  getBlocks() {}
+}
 
 /**
  * @param {load[]} payload

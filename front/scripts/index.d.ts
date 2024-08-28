@@ -12,7 +12,8 @@ declare type Block = {
 
 declare type Defintion = {
   id: string;
-  type: string;
+  value?: string;
+  type?: string;
 };
 
 declare type Import = {
