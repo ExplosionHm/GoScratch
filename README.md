@@ -5,3 +5,9 @@ This project is a recreation of the visual programming language Scratch made by 
 Currently this project is **not complete**, and I am hard at work on it!
 
 To support this project please join my [**Discord Server**](https://discord.gg/9QtAeWHmzx)
+
+Planned supported languages:
+- [ ] Portuguese
+- [ ] Spanish
+- [x] ~~English~~
+- [ ] German
