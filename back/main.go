@@ -1,6 +1,7 @@
 package main
 
 import (
+	/*@INSERT imports*/
 	"fmt"
 	"goscratch/scratch"
 	"image/color"
@@ -15,20 +16,21 @@ func main() {
 }
 
 var (
-	test = ""
+	/*@INSERT defintions*/
+	test int
 )
 
 func Game() {
-	/*@INSERT start*/
-	windows := scratch.CreateWindow("GoScratch", 1024, 768, true)
-	windows.SetSmooth(true)
+	/*@INSERT main*/
+	window := scratch.CreateWindow("GoScratch", 1024, 768, true)
+	window.SetSmooth(true)
 
 	s := scratch.CreateSprite("C:/Users/sandn/Documents/Projects/goscratch/back/images/gopher.png")
 
-	for !windows.Closed() {
+	for !window.Closed() {
 		/*@INSERT loop*/
-		windows.Clear(color.White)
-		s.Draw(windows, pixel.IM.Moved(windows.MousePosition()))
-		windows.Update()
+		window.Clear(color.White)
+		s.Draw(window, pixel.IM.Moved(window.MousePosition()))
+		window.Update()
 	}
 }

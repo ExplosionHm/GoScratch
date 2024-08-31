@@ -1,55 +1,52 @@
 import fs from "fs";
-import { exec } from "child_process";
 
-const asset = {
-  "+types": {
-    int: (v) => {
-      switch (typeof v) {
-        case "undefined":
-          return 0;
-        case "symbol":
-          return 0;
-        case "string":
-          return parseInt(v);
-        case "object":
-          return 0;
-        case "number":
-          return Math.floor(v);
-        case "function":
-          return 0;
-        case "boolean":
-          return Number(v);
-        case "bigint":
-          return Number(v);
-        default:
-          return 0;
-      }
-    },
-    bool: (v) => {
-      return Boolean(v);
-    },
-  },
-  CreateWindow: {
+/**@type {BlockDefinition[]} */
+const asset = [
+  {
+    id: "CreateWindow",
     args: ["string", "int", "int", "bool"],
-    tails: [],
   },
-  SetSmooth: {
+  {
+    id: "SetSmooth",
     args: ["bool"],
     tails: [],
   },
-  CreateSprite: {
+  {
+    id: "CreateSprite",
     args: ["string"],
     tails: [],
   },
-  Draw: {
+  {
+    id: "Draw",
     args: ["target", "matrix"],
     tails: [],
   },
-  Update: {
+  {
+    id: "Update",
     args: [],
     tails: [],
   },
-};
+];
+class Import {
+  constructor() {
+    /**@type {Import[]} */
+    this.imports = [];
+  }
+  /**
+   * @param {Import} Import
+   */
+  add(Import) {
+    this.imports.push(Import);
+    return this;
+  }
+  /**
+   * @param {Import[]} Imports
+   */
+  set(Imports) {
+    this.imports = Imports;
+    return this;
+  }
+}
 
 class GoScratch {
   /**
@@ -92,10 +89,102 @@ class GoScratch {
     return out;
   }
   /**
+   * @param {BlockDefinition[]} defintions
    * @returns {string}
    */
-  getBlocks() {}
+  getBlocks(defintions) {
+    //(presage)
+    //(uid) (assignType) (lib).(parents).(id)(args)
+    //(tails)
+    let out = "";
+    for (const block of this.blocks) {
+      const def = defintions.find((v) => v.id === block.id);
+      if (!def) {
+        console.log(`Definition not found for: ${block.id}`);
+        continue;
+      }
+      if (def.presage) out += def.presage.join("\n") + "\n";
+      let cap = "";
+      switch (block.assignType) {
+        case "assign":
+          const inDefintions = this.defintions.find((v) => v.id === block.uid)
+            ? true
+            : false;
+          out += `${block.uid} ${inDefintions ? "=" : ":="} `;
+          break;
+        case "append":
+          cap = ")";
+          out = `${block.uid} = append(${block.uid}, `;
+          break;
+        case "map":
+          break;
+        default:
+          break;
+      }
+      if (block.lib) out += block.lib + ".";
+      if (block.parents) out += block.parents.join(".") + ".";
+      out += `${block.id}(${block.args.join(", ")})`;
+      if (cap) out += cap;
+      out += "\n";
+      if (def.tails) out += def.tails.join("\n") + "\n";
+    }
+
+    return out;
+  }
+
+  /**
+   * @param {Defintion[]} defintions
+   * @return {string}
+   */
+  compile(defintions) {
+    let out = "";
+    out += this.getImports();
+    out += this.getDefintions();
+    out += this.getBlocks(defintions);
+    return out;
+  }
 }
+
+const i = new Import().add({ url: "goscratch/scratch" }).imports;
+const d = [
+  {
+    id: "test",
+    type: "int",
+  },
+];
+
+/**@type {Block[]} */
+const b = [
+  {
+    lib: "scratch",
+    assignType: "assign",
+    id: "CreateWindow",
+    uid: "window",
+    args: ['"GoScratch"', 1024, 768, true],
+  },
+  {
+    assignType: "none",
+    id: "SetSmooth",
+    parents: ["window"],
+    uid: "",
+    args: [true],
+  },
+  {
+    lib: "scratch",
+    assignType: "assign",
+    id: "CreateSprite",
+    uid: "s",
+    args: [
+      '"C:/Users/sandn/Documents/Projects/goscratch/back/images/gopher.png"',
+    ],
+  },
+
+  //! ADD STATEMENTS
+];
+
+const f = new GoScratch(i, d, b);
+
+console.log(f.compile(asset));
 
 /**
  * @param {load[]} payload
@@ -118,7 +207,7 @@ function parse(payload) {
   return out;
 }
 
-(async () => {
+async () => {
   const file = fs.readFileSync("front/test.txt", {
     encoding: "utf8",
   });
@@ -137,4 +226,4 @@ function parse(payload) {
       out.slice(pos, out.length);
   }
   fs.writeFileSync("front/test.txt", out);
-})();
+};

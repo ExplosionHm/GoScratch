@@ -17,4 +17,4 @@ exit /b 1
 go build %*
 popd
 pause
-exit /b 0
+exit 0

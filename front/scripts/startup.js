@@ -42,12 +42,12 @@ function runCmds(...cmds) {
     child.stdout.setEncoding("utf8");
     child.stdout.on("data", (data) => {
       data = data.toString();
-      console.log(data);
+      console.log("Data: " + data);
     });
 
     child.stderr.setEncoding("utf8");
     child.stderr.on("data", (data) => {
-      console.log(data);
+      console.log("data2: " + data);
     });
   }
   child.on("close", (code) => {

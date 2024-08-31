@@ -9,8 +9,8 @@ import (
 	"github.com/gopxl/pixel/pixelgl"
 )
 
-func CreateWindow(title string, width int, height int, resizeable bool) *pixelgl.Window {
-	w, err := pixelgl.NewWindow(pixelgl.WindowConfig{Title: title, Bounds: pixel.R(0, 0, float64(width), float64(height)), Resizable: resizeable})
+func CreateWindow() *pixelgl.Window {
+	w, err := pixelgl.NewWindow(pixelgl.WindowConfig{})
 	if err != nil {
 		panic(err)
 	}
