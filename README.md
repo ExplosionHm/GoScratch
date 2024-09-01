@@ -9,5 +9,6 @@ To support this project please join my [**Discord Server**](https://discord.gg/9
 Planned supported languages:
 - [ ] Portuguese
 - [ ] Spanish
+- [ ] Italian
 - [x] ~~English~~
 - [ ] German
