@@ -5,14 +5,19 @@ import { dirname, join } from "path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+/**@type {BrowserWindow} */
 let window;
 
 app.whenReady().then(() => {
   window = new BrowserWindow({
-    width: 1024,
-    height: 768,
+    width: 1280,
+    height: 720,
+    minWidth: 1280,
+    minHeight: 720,
     title: "GoScratch Editor",
     darkTheme: true,
+    titleBarOverlay: true,
+    titleBarStyle: "hidden",
     webPreferences: {
       nodeIntegration: true,
       preload: join(__dirname, "preload.mjs"),
@@ -20,6 +25,9 @@ app.whenReady().then(() => {
     autoHideMenuBar: true,
   });
   window.loadFile("index.html");
+  /* setInterval(() => {
+    window.reload()
+  }, 1000) */
 });
 
 /**

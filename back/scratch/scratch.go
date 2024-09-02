@@ -9,8 +9,13 @@ import (
 	"github.com/gopxl/pixel/pixelgl"
 )
 
+var (
+	IM = pixel.IM
+	Runner = pixelgl.Run
+)
+
 func CreateWindow() *pixelgl.Window {
-	w, err := pixelgl.NewWindow(pixelgl.WindowConfig{})
+	w, err := pixelgl.NewWindow(pixelgl.WindowConfig{Title: "GoScratch Window", Bounds: pixel.R(0, 0, 1024, 768), Resizable: true, TransparentFramebuffer: true})
 	if err != nil {
 		panic(err)
 	}

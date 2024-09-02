@@ -5,14 +5,11 @@ import (
 	"fmt"
 	"goscratch/scratch"
 	"image/color"
-
-	"github.com/gopxl/pixel"
-	"github.com/gopxl/pixel/pixelgl"
 )
 
 func main() {
 	fmt.Println("Started")
-	pixelgl.Run(Game)
+	scratch.Runner(Game)
 }
 
 var (
@@ -22,15 +19,13 @@ var (
 
 func Game() {
 	/*@INSERT main*/
-	window := scratch.CreateWindow("GoScratch", 1024, 768, true)
+	window := scratch.CreateWindow()
 	window.SetSmooth(true)
-
 	s := scratch.CreateSprite("C:/Users/sandn/Documents/Projects/goscratch/back/images/gopher.png")
-
 	for !window.Closed() {
 		/*@INSERT loop*/
 		window.Clear(color.White)
-		s.Draw(window, pixel.IM.Moved(window.MousePosition()))
+		s.Draw(window, scratch.IM.Moved(window.MousePosition()))
 		window.Update()
 	}
 }
