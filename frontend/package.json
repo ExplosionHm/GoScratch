@@ -1,0 +1,22 @@
+{
+  "name": "opticode",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^4.6.2",
+    "@astrojs/check": "^0.5.10",
+    "typescript": "^5.4.5"
+  },
+  "description": "",
+  "keywords": [],
+  "author": "ExplosionHm"
+}

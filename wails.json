@@ -1,0 +1,13 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "opticode",
+  "outputfilename": "Opticode",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "http://localhost:4321",
+  "author": {
+    "name": "ExplosionHm",
+    "email": "92651856+ExplosionHm@users.noreply.github.com"
+  }
+}
