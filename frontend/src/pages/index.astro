@@ -1,23 +1,31 @@
 ---
 import Layout from "../layouts/Layout.astro";
 ---
+
 <Layout title="opticode">
-	<main>
-		<h1>There's nothing here yet</h1>
-	</main>
+  <main>
+    <h1>There's nothing here yet</h1>
+  </main>
 </Layout>
 
-<style>
-	main {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding: 2rem;
-	}
+<script>
+  import { TranspileFile } from "../../wailsjs/go/desktop/App";
+  import { url } from "../../wailsjs/go/models";
 
-	h1 {
-		font-size: 2rem;
-		margin-bottom: 2rem;
-		text-align: center;
-	}
+  TranspileFile(url.URL.createFrom(0));
+</script>
+
+<style>
+  main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
 </style>

@@ -4,20 +4,19 @@ import (
 	"embed"
 	"log"
 
+	"opticode/desktop"
+
 	"github.com/wailsapp/wails/v2"
+	"github.com/wailsapp/wails/v2/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
-	"github.com/wailsapp/wails/v2/pkg/options/linux"
-	"github.com/wailsapp/wails/v2/pkg/options/mac"
-	"github.com/wailsapp/wails/v2/pkg/options/windows"
 )
 
 //go:embed all:frontend/dist
 var assets embed.FS
 
 func main() {
-	app := NewApp()
-
+	app := desktop.NewApp(logger.NewDefaultLogger())
 	err := wails.Run(&options.App{
 		Title:            "Opticode",
 		Width:            1024,
@@ -26,23 +25,15 @@ func main() {
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
+		Logger: app.Log,
 		Bind: []interface{}{
 			app,
 		},
-		Windows: &windows.Options{
-			WebviewIsTransparent: false,
-			WindowIsTranslucent:  false,
-		},
-		Mac: &mac.Options{
-			WebviewIsTransparent: false,
-			WindowIsTranslucent:  false,
-		},
-		Linux: &linux.Options{
-			WindowIsTranslucent: false,
-		},
+		OnStartup: app.OnStartup,
 	})
-
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	app.Log.Info("Test")
 }
