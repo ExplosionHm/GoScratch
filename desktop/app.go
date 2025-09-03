@@ -2,12 +2,15 @@ package desktop
 
 import (
 	"context"
+	"log"
 	"opticode/desktop/compile"
-	"opticode/desktop/log"
 	"opticode/desktop/tree"
+	"opticode/utils"
 	"os"
 	"os/exec"
 	"path"
+	"strconv"
+	"time"
 )
 
 type Project struct {
@@ -15,27 +18,20 @@ type Project struct {
 
 type App struct {
 	ctx     context.Context
-	Log     *log.Logger
 	Tree    *tree.Tree
 	Project Project
 }
 
-func NewApp(l *log.Logger) *App {
-	t := tree.NewTree(l)
+func NewApp() *App {
+	t := tree.NewTree()
 
 	return &App{
-		Log:  l,
 		Tree: t,
 	}
 }
 
 func (a *App) OnStartup(ctx context.Context) {
 	a.ctx = ctx
-	a.Log.Info("STARTUP")
-
-	if len(a.Tree.Nodes) == 0 {
-		a.Log.Debug("tree is empty")
-	}
 }
 
 type Response[T any] struct {
@@ -44,15 +40,19 @@ type Response[T any] struct {
 }
 
 func (a *App) GenerateCode(outdir string) error {
+	start := time.Now()
 	out, err := compile.Run(a.Tree, compile.Golang)
 	if err != nil {
 		return err
 	}
-	a.Log.Print("Server sent: " + out)
+	end := time.Since(start).Nanoseconds()
+	log.Println("Server sent: "+out, "Completed in "+strconv.Itoa(int(end))+"ns")
 
-	err = compile.InitGoProject(outdir, "placeholder")
-	if err != nil {
-		return err
+	if !utils.FileExists(path.Join(outdir, "go.mod")) {
+		err = compile.InitGoProject(outdir, "placeholder")
+		if err != nil {
+			return err
+		}
 	}
 
 	err = os.WriteFile(path.Join(outdir, "main.go"), []byte(out), os.ModeAppend)

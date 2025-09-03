@@ -12,7 +12,7 @@ const (
 type Node struct {
 	Opcode NodeOp  `json:"opcode"`
 	Opid   string  `json:"opid"`
-	Fields []any   `json:"fields"`
+	Fields []Value `json:"fields"`
 	Parent *string `json:"parent"`
 	Next   string  `json:"next"`
 
@@ -26,7 +26,7 @@ func (n Node) IsParent() bool {
 	return n.Parent == nil
 }
 
-func NewNode(op NodeOp, flags Flags, fields ...any) Node {
+func NewNode(op NodeOp, flags Flags, fields ...Value) Node {
 	return Node{
 		Opcode: op,
 		Fields: fields,

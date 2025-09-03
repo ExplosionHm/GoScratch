@@ -1,0 +1,9 @@
+dev_mode:
+  root_path: .
+  debounce: 500
+  ignore:
+    dir:
+      - node_modules
+      - .git
+      - dist
+      - output

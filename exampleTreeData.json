@@ -17,7 +17,13 @@
       "tab": "main",
       "next": "_exit",
       "parent": "_entry",
-      "fields": ["Hello, world!"],
+      "fields": [
+        {
+          "value": "Hello, World!",
+          "type": "string",
+          "hasQuotes": true
+        }
+      ],
       "children": null,
       "position": [0, 0],
       "flags": 0

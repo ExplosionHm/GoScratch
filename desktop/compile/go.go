@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"reflect"
 	"strings"
 )
 
@@ -104,19 +103,25 @@ func (gg *GoGenerator) Next() iter.Seq2[string, error] {
 			temp := ""
 
 			for i, v := range node.Fields {
-				t := reflect.TypeOf(v)
-				if t.Name() == def.Arguments[i][1] || strings.HasSuffix(def.Arguments[i][1], "Type") {
-					// This just doesn't work
-					//println("Has entered main condition")
-					if val, ok := v.(string); ok {
-						temp = "\"" + strings.Join([]string{temp, val}, ",") + "\""
+				ty := v.GetType()
+				if ty.Name() == def.Arguments[i][1] || strings.HasSuffix(def.Arguments[i][1], "Type") {
+					if v.HasQuotes {
+						if len(temp) > 0 {
+							temp = "\"" + temp + "," + v.Value + "\""
+						} else {
+							temp = "\"" + temp + v.Value + "\""
+						}
 					} else {
-						temp = strings.Join([]string{temp, fmt.Sprintf("%v", v)}, ",")
+						if len(temp) > 0 {
+							temp += "," + v.Value
+						} else {
+							temp += v.Value
+						}
 					}
 				}
 			}
 
-			result += ")\n"
+			result += temp + ")\n"
 		}
 
 		yield(result, nil)
@@ -146,7 +151,8 @@ func (gg *GoGenerator) Generate() (string, error) {
 	gg.NodeIndexID = GoEntryId
 
 	gg.Builder.WriteString("package main\n\n")
-	gg.Builder.WriteString("func main() {\n")
+	gg.Builder.WriteString("//_functions")
+	gg.Builder.WriteString("\nfunc main() {\n")
 	if err := gg.finishNode(); err != nil {
 		return "", err
 	}

@@ -4,21 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"opticode/desktop/log"
 	"os"
 )
 
 type Tree struct {
 	Assets []string        `json:"assets"` //! Implement
 	Nodes  map[string]Node `json:"nodes,omitempty"`
-	logger *log.Logger     `json:"-"`
 }
 
-func NewTree(l *log.Logger) *Tree {
+func NewTree() *Tree {
 	return &Tree{
 		Assets: nil,
 		Nodes:  map[string]Node{},
-		logger: l,
 	}
 }
 
