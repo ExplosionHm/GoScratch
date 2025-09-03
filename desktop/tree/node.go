@@ -5,31 +5,33 @@ type NodeOp int32
 const (
 	OP_assign NodeOp = iota
 	OP_if
+	OP_funcCall
 	OP_func
 )
 
 type Node struct {
-	Opcode   NodeOp `json:"opcode"`
-	Fields   []any  `json:"values"`
-	Children []Node `json:"children,omitempty"`
+	Opcode NodeOp  `json:"opcode"`
+	Opid   string  `json:"opid"`
+	Fields []any   `json:"fields"`
+	Parent *string `json:"parent"`
+	Next   string  `json:"next"`
 
 	// Only used if the node is a parent
-	Position [2]int `json:"-,omitempty"`
-	Flags    Flags
+	Position [2]int `json:"position,omitempty"`
+	Flags    Flags  `json:"flags,omitempty"`
+	Tab      string `json:"tab"`
 }
 
 func (n Node) IsParent() bool {
-	if n.Children == nil {
-		return false
-	}
-	return len(n.Children) > 0
+	return n.Parent == nil
 }
 
 func NewNode(op NodeOp, flags Flags, fields ...any) Node {
 	return Node{
-		Opcode:   op,
-		Fields:   fields,
-		Children: nil,
+		Opcode: op,
+		Fields: fields,
+		Parent: nil,
+		Next:   "",
 
 		Position: [2]int{},
 		Flags:    flags,

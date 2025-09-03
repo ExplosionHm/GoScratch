@@ -2,12 +2,12 @@ package main
 
 import (
 	"embed"
-	"log"
 
+	_log "log"
 	"opticode/desktop"
+	"opticode/desktop/log"
 
 	"github.com/wailsapp/wails/v2"
-	"github.com/wailsapp/wails/v2/pkg/logger"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 )
@@ -16,7 +16,7 @@ import (
 var assets embed.FS
 
 func main() {
-	app := desktop.NewApp(logger.NewDefaultLogger())
+	app := desktop.NewApp(log.NewLogger())
 	err := wails.Run(&options.App{
 		Title:            "Opticode",
 		Width:            1024,
@@ -28,12 +28,14 @@ func main() {
 		Logger: app.Log,
 		Bind: []interface{}{
 			app,
+			app.Tree,
 		},
 		OnStartup: app.OnStartup,
+		Debug: options.Debug{
+			OpenInspectorOnStartup: true,
+		},
 	})
 	if err != nil {
-		log.Fatal(err)
+		_log.Fatal(err)
 	}
-
-	app.Log.Info("Test")
 }

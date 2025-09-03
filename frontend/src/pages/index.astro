@@ -4,16 +4,32 @@ import Layout from "../layouts/Layout.astro";
 
 <Layout title="opticode">
   <main>
-    <h1>There's nothing here yet</h1>
+    <script>
+      import * as runtime from "../../wailsjs/runtime/runtime";
+      import * as app from "../../wailsjs/go/desktop/App";
+      import * as tree from "../../wailsjs/go/tree/Tree";
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const button = document.getElementById("test");
+        if (button) {
+          button.addEventListener("click", test);
+        }
+      });
+
+      async function test() {
+        runtime.LogDebug("click test button");
+        await tree.OpenFile("exampleTreeData.json");
+
+        try {
+          await app.GenerateCode("./output");
+        } catch (err) {
+          runtime.LogError(String(err));
+        }
+      }
+    </script>
+    <button id="test">TEST ME</button>
   </main>
 </Layout>
-
-<script>
-  import { TranspileFile } from "../../wailsjs/go/desktop/App";
-  import { url } from "../../wailsjs/go/models";
-
-  TranspileFile(url.URL.createFrom(0));
-</script>
 
 <style>
   main {

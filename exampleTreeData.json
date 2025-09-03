@@ -1,0 +1,26 @@
+{
+  "assets": [],
+  "nodes": {
+    "_entry": {
+      "opcode": 0,
+      "opid": "",
+      "tab": "main",
+      "fields": [],
+      "parent": null,
+      "next": "106",
+      "position": [0, 0],
+      "flags": 0
+    },
+    "106": {
+      "opcode": 2,
+      "opid": "print",
+      "tab": "main",
+      "next": "_exit",
+      "parent": "_entry",
+      "fields": ["Hello, world!"],
+      "children": null,
+      "position": [0, 0],
+      "flags": 0
+    }
+  }
+}
