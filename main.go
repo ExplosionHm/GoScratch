@@ -17,6 +17,7 @@ var assets embed.FS
 
 func main() {
 	log.SetOutput(os.Stdout)
+
 	app := desktop.NewApp()
 	err := wails.Run(&options.App{
 		Title:            "Opticode",

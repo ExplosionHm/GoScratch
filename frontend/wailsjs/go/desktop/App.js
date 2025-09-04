@@ -5,3 +5,7 @@
 export function GenerateCode(arg1) {
   return window['go']['desktop']['App']['GenerateCode'](arg1);
 }
+
+export function OpenProject(arg1) {
+  return window['go']['desktop']['App']['OpenProject'](arg1);
+}

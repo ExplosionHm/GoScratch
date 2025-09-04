@@ -6,28 +6,45 @@ import Layout from "../layouts/Layout.astro";
   <main>
     <script>
       import * as runtime from "../../wailsjs/runtime/runtime";
+      import * as model from "../../wailsjs/go/models";
       import * as app from "../../wailsjs/go/desktop/App";
       import * as tree from "../../wailsjs/go/tree/Tree";
 
       document.addEventListener("DOMContentLoaded", function () {
-        const button = document.getElementById("test");
-        if (button) {
-          button.addEventListener("click", test);
+        const gen = document.getElementById("gen");
+        if (gen) {
+          gen.addEventListener("click", generate);
+        }
+        const proj = document.getElementById("proj");
+        if (proj) {
+          proj.addEventListener("click", project);
         }
       });
 
-      async function test() {
-        runtime.LogDebug("click test button");
-        await tree.OpenFile("exampleTreeData.json");
+      async function generate() {
+        runtime.LogDebug("click generate button");
 
         try {
-          await app.GenerateCode("./output");
+          await tree.OpenFile("project/tree.json");
+          await app.GenerateCode("project");
+        } catch (err) {
+          runtime.LogError(String(err));
+        }
+      }
+
+      async function project() {
+        runtime.LogDebug("click project button");
+        try {
+          const project = await app.OpenProject("project");
+          console.log(project);
+          runtime.LogPrint(JSON.stringify(project));
         } catch (err) {
           runtime.LogError(String(err));
         }
       }
     </script>
-    <button id="test">TEST ME</button>
+    <button id="gen">Generate Code</button>
+    <button id="proj">Open Project</button>
   </main>
 </Layout>
 

@@ -19,7 +19,6 @@ func NewTree() *Tree {
 	}
 }
 
-// JS safe
 func (t *Tree) OpenFile(path string) error {
 	if t == nil {
 		return fmt.Errorf("cannot open file: tree is nil")
@@ -38,8 +37,4 @@ func (t *Tree) OpenFile(path string) error {
 
 	*t = treeData
 	return nil
-}
-
-func (t *Tree) LookUp() {
-
 }

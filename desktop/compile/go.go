@@ -54,16 +54,6 @@ func InitGoProject(dir string, name string) error {
 	return nil
 }
 
-func lookupFunc(libs []*GoLibrary, opid string) *FuncDef {
-	for _, lib := range libs {
-		def := lib.Library.LookupFunc(opid)
-		if def != nil {
-			return def
-		}
-	}
-	return nil
-}
-
 type GoGenerator struct {
 	Tree        *tree.Tree
 	Libaries    []*GoLibrary
@@ -89,42 +79,12 @@ func (gg *GoGenerator) Next() iter.Seq2[string, error] {
 			yield("", fmt.Errorf("cannot resolve next node: %s -> ?", gg.NodeIndexID))
 			return
 		}
-		var result string
 
 		switch node.Opcode {
 		case tree.OP_funcCall:
-			def := lookupFunc(gg.Libaries, node.Opid)
-			if def == nil {
-				yield("", fmt.Errorf("undefined function: %s", node.Opid))
-				return
-			}
-			result = gg.Indent + node.Opid + "("
-
-			temp := ""
-
-			for i, v := range node.Fields {
-				ty := v.GetType()
-				if ty.Name() == def.Arguments[i][1] || strings.HasSuffix(def.Arguments[i][1], "Type") {
-					if v.HasQuotes {
-						if len(temp) > 0 {
-							temp = "\"" + temp + "," + v.Value + "\""
-						} else {
-							temp = "\"" + temp + v.Value + "\""
-						}
-					} else {
-						if len(temp) > 0 {
-							temp += "," + v.Value
-						} else {
-							temp += v.Value
-						}
-					}
-				}
-			}
-
-			result += temp + ")\n"
+			yield(gg.op_funcCall(node))
+			return
 		}
-
-		yield(result, nil)
 	}
 }
 
