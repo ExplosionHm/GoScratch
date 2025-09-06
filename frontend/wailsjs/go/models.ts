@@ -44,7 +44,7 @@ export namespace tree {
 	export class Value {
 	    value: string;
 	    type: string;
-	    hasQuotes: boolean;
+	    flags: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Value(source);
@@ -54,7 +54,7 @@ export namespace tree {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.value = source["value"];
 	        this.type = source["type"];
-	        this.hasQuotes = source["hasQuotes"];
+	        this.flags = source["flags"];
 	    }
 	}
 	export class Node {

@@ -23,7 +23,17 @@ func (t *Tree) OpenFile(path string) error {
 	if t == nil {
 		return fmt.Errorf("cannot open file: tree is nil")
 	}
-	file, err := os.OpenFile(path, 0, os.ModeAppend)
+	info, err := os.Stat(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("file does not exist")
+		}
+		return fmt.Errorf("an error has occurred while checking path")
+	}
+	if info.IsDir() {
+		return fmt.Errorf("path has to point to a file")
+	}
+	file, err := os.OpenFile(path, 0, 0)
 	if err != nil {
 		return err
 	}

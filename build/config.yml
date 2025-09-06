@@ -6,5 +6,4 @@ dev_mode:
       - node_modules
       - .git
       - dist
-      - output
-      - project
+      - ../project

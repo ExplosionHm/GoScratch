@@ -2,6 +2,7 @@ package compile
 
 import (
 	"fmt"
+	"log"
 	"opticode/desktop/tree"
 )
 
@@ -24,12 +25,13 @@ func Run(tree *tree.Tree, lang Language) (string, error) {
 	case Golang:
 		// Validate
 		//! Implement
-
+		log.Println("Enter golang")
 		standard := NewGoLibary("libraries/go_standard.yml")
 		err = standard.Open()
 		if err != nil {
 			return "", err
 		}
+		log.Println("Passed lib")
 
 		gen := NewGoGenerator(tree, []*GoLibrary{standard}, "	")
 		out, err = gen.Generate()
@@ -44,4 +46,13 @@ func Run(tree *tree.Tree, lang Language) (string, error) {
 	//! Implement
 
 	return out, nil
+}
+
+func nearestArgument(length int, i int) int {
+	if i <= 0 || length < i {
+		// is within length
+		return i
+	}
+
+	return length - 1 // Return last
 }

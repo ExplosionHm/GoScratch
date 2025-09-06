@@ -2,24 +2,27 @@ package compile
 
 import (
 	"fmt"
+	"log"
 	"opticode/desktop/tree"
 	"strings"
 )
 
 func (gg *GoGenerator) op_funcCall(node tree.Node) (string, error) {
+	log.Println("func")
+	gg.IncreaseIndent()
 	var result string
 	def := lookupFunc(gg.Libaries, node.Opid)
 	if def == nil {
 		return "", fmt.Errorf("undefined function: %s", node.Opid)
 	}
-	result = gg.Indent + node.Opid + "("
+	result = gg.Indent() + node.Opid + "("
 
 	for i, v := range node.Fields {
 		ty := v.GetType()
-		argIndex := nearestArgument(def.Arguments, i)
-		if ty.Name() == def.Arguments[argIndex][1] || strings.HasSuffix(def.Arguments[argIndex][1], "Type") {
+		argIndex := nearestArgument(len(def.Arguments), i)
+		if ty.Name() == def.Arguments[argIndex][1] || strings.HasSuffix(def.Arguments[argIndex][1], "Type") { // TODO: Remove hardcoded value "Type"
 			// TODO: Can be improved
-			if v.HasQuotes {
+			if v.Flags&tree.HasQuotes != 0 {
 				if i > 0 {
 					result += ", " + "\"" + v.Value + "\""
 				} else {
@@ -38,7 +41,11 @@ func (gg *GoGenerator) op_funcCall(node tree.Node) (string, error) {
 	}
 
 	result += ")\n"
-
+	err := gg.finishNode()
+	if err != nil {
+		return "", err
+	}
+	gg.DecreaseIndent()
 	return result, nil
 }
 
@@ -50,15 +57,4 @@ func lookupFunc(libs []*GoLibrary, opid string) *FuncDef {
 		}
 	}
 	return nil
-}
-
-// TODO: Only take in the length
-func nearestArgument(args [][]string, i int) int {
-	length := len(args)
-	if i <= 0 || length < i {
-		// is within length
-		return i
-	}
-
-	return length - 1 // Return last
 }

@@ -42,6 +42,7 @@ func (a *App) OpenProject(dir string) (*project.Project, error) {
 }
 
 func (a *App) GenerateCode(dir string) error {
+	log.Println("Enter gen")
 	start := time.Now()
 	out, err := compile.Run(a.Tree, compile.Golang)
 	if err != nil {
