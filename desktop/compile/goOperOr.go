@@ -5,9 +5,9 @@ import (
 	"opticode/desktop/tree"
 )
 
-func (gg *GoGenerator) op_operAnd(node tree.Node) (string, error) {
+func (gg *GoGenerator) op_operOr(node tree.Node) (string, error) {
 	if len(node.Fields) != 2 {
-		return "", fmt.Errorf("AND operation cannot take in more than or less than two values: %d values specified", len(node.Fields))
+		return "", fmt.Errorf("OR operation cannot take in more than or less than two values: %d values specified", len(node.Fields))
 	}
 
 	var arg1 string
@@ -46,5 +46,5 @@ func (gg *GoGenerator) op_operAnd(node tree.Node) (string, error) {
 		}
 	}
 
-	return arg1 + " && " + arg2, nil
+	return arg1 + " || " + arg2, nil
 }

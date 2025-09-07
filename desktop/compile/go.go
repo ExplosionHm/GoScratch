@@ -20,6 +20,7 @@ type GoGenerator struct {
 	Tree        *tree.Tree
 	Libaries    []*GoLibrary
 	Builder     strings.Builder
+	FuncDefs    []string
 	indent      string
 	indentMul   int
 	NodeTracker []string
@@ -44,6 +45,9 @@ func (gg *GoGenerator) IncreaseIndent() {
 }
 
 func (gg *GoGenerator) DecreaseIndent() {
+	if gg.indentMul <= 0 {
+		return
+	}
 	gg.indentMul--
 }
 
@@ -59,35 +63,64 @@ func (gg *GoGenerator) Next() iter.Seq2[string, error] {
 			}
 			node, ok := gg.Tree.Nodes[gg.NodeIndexID]
 			if !ok {
-				yield("", fmt.Errorf("cannot resolve next node: %s -> ? (code: 1)", gg.NodeIndexID))
-				return
+				if !yield("", fmt.Errorf("cannot resolve next node: %s -> ? (code: 1)", gg.NodeIndexID)) {
+					return
+				}
 			}
-			log.Println("Processing node: ", gg.NodeIndexID, node.Opcode)
-
-			switch node.Opcode {
-			case tree.OP_FuncCall:
-				if !yield(gg.op_funcCall(node)) {
-					return
-				}
-			case tree.OP_If:
-				if !yield(gg.op_if(node)) {
-					return
-				}
+			log.Println("Processing node:", gg.NodeIndexID, node.Opcode)
+			log.Println(node)
+			if !yield(gg.Eval(node)) {
+				return
 			}
 		}
 	}
 }
 
-func (gg *GoGenerator) finishNode() error {
+func (gg *GoGenerator) Eval(node tree.Node) (string, error) {
+	switch node.Opcode {
+	// Comparison Operators
+	case tree.OP_OperEqual:
+		log.Println("operEqual")
+		return gg.op_operEqual(node)
+		// Logical Operators
+	case tree.OP_OperAnd:
+		log.Println("operAnd")
+		return gg.op_operAnd(node)
+	case tree.OP_OperOr:
+		log.Println("operOr")
+		return gg.op_operOr(node)
+	case tree.OP_OperNot:
+		log.Println("operNot")
+		return gg.op_operNot(node)
+	case tree.OP_Func:
+		log.Println("func")
+		def, err := gg.op_func(node)
+		if err != nil {
+			return "", err
+		}
+		gg.FuncDefs = append(gg.FuncDefs, def)
+		return "", nil
+	case tree.OP_FuncCall:
+		log.Println("funcCall")
+		return gg.op_funcCall(node)
+	case tree.OP_If:
+		log.Println("if")
+		return gg.op_if(node)
+	default:
+		return "", fmt.Errorf("invalid opcode: %d", node.Opcode)
+	}
+}
+
+func (gg *GoGenerator) finishNode() (nextExists bool) {
 	gg.NodeTracker = append(gg.NodeTracker, gg.NodeIndexID)
 
 	node, ok := gg.Tree.Nodes[gg.NodeIndexID]
 	if !ok {
-		return nil
+		return false
 	}
 	log.Printf("Finished node: %s Next: %s", gg.NodeIndexID, node.Next)
 	gg.NodeIndexID = node.Next
-	return nil
+	return true
 }
 
 func (gg *GoGenerator) Generate() (string, error) {
@@ -104,8 +137,8 @@ func (gg *GoGenerator) Generate() (string, error) {
 	gg.Builder.WriteString("package main\n\n")
 	gg.Builder.WriteString("//_functions")
 	gg.Builder.WriteString("\nfunc main() {\n")
-	if err := gg.finishNode(); err != nil {
-		return "", err
+	if nextExists := gg.finishNode(); !nextExists {
+		return "", fmt.Errorf("failed to compile: program too short")
 	}
 
 	for buf, err := range gg.Next() {
@@ -121,6 +154,15 @@ func (gg *GoGenerator) Generate() (string, error) {
 	}
 
 	gg.Builder.WriteString("}")
+	log.Printf("length: %d", len(gg.FuncDefs))
+	for _, def := range gg.FuncDefs {
+		log.Println("TESTTSTSTWFW")
+		log.Println("Adding func defs")
+		gg.Builder.WriteString("\n" + def)
+	}
 
+	for _, l := range gg.Libaries {
+		l.Dispose()
+	}
 	return gg.Builder.String(), nil
 }

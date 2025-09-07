@@ -1,6 +1,7 @@
 package compile
 
 type Library struct {
+	Id      string             `json:"id"`
 	Version string             `yaml:"version"`
 	Types   []string           `yaml:"types"`
 	Funcs   map[string]FuncDef `yaml:"funcs"`

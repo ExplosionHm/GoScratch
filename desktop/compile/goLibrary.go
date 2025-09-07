@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"path"
 
-	"gopkg.in/yaml.v3"
+	"encoding/json"
 )
 
 type GoLibrary struct {
@@ -28,6 +28,7 @@ func (gl *GoLibrary) Open() error {
 	gl.file, err = os.OpenFile(gl.Path, 0, os.ModeAppend)
 	if err != nil {
 		return err
+
 	}
 	data, err := io.ReadAll(gl.file)
 	if err != nil {
@@ -35,7 +36,7 @@ func (gl *GoLibrary) Open() error {
 	}
 
 	var libData Library
-	err = yaml.Unmarshal(data, &libData)
+	err = json.Unmarshal(data, &libData)
 	if err != nil {
 		return err
 	}

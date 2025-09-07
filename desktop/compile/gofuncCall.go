@@ -8,7 +8,6 @@ import (
 )
 
 func (gg *GoGenerator) op_funcCall(node tree.Node) (string, error) {
-	log.Println("func")
 	gg.IncreaseIndent()
 	var result string
 	def := lookupFunc(gg.Libaries, node.Opid)
@@ -18,9 +17,8 @@ func (gg *GoGenerator) op_funcCall(node tree.Node) (string, error) {
 	result = gg.Indent() + node.Opid + "("
 
 	for i, v := range node.Fields {
-		ty := v.GetType()
 		argIndex := nearestArgument(len(def.Arguments), i)
-		if ty.Name() == def.Arguments[argIndex][1] || strings.HasSuffix(def.Arguments[argIndex][1], "Type") { // TODO: Remove hardcoded value "Type"
+		if v.Type == def.Arguments[argIndex][1] || strings.HasSuffix(def.Arguments[argIndex][1], "Type") { // TODO: Remove hardcoded value "Type"
 			// TODO: Can be improved
 			if v.Flags&tree.HasQuotes != 0 {
 				if i > 0 {
@@ -41,9 +39,8 @@ func (gg *GoGenerator) op_funcCall(node tree.Node) (string, error) {
 	}
 
 	result += ")\n"
-	err := gg.finishNode()
-	if err != nil {
-		return "", err
+	if nextExists := gg.finishNode(); !nextExists {
+		log.Println("Failed to find next-")
 	}
 	gg.DecreaseIndent()
 	return result, nil

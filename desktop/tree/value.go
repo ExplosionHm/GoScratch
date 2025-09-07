@@ -6,8 +6,16 @@ type ValueFlag int32
 
 const (
 	HasQuotes ValueFlag = 1 << iota
-	IsPointer
-	IsCondition
+	IsPointer           // Points to another node
+
+	IsCondition // Inside if statement condition
+	IsIfBody    // Inside if statement body
+	IsElseBody  // Inside else statement body
+
+	IsFuncRef
+	IsFuncTypes
+	IsFuncArg
+	IsFuncBody
 )
 
 type Value struct {

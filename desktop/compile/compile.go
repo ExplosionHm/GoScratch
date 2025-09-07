@@ -26,14 +26,21 @@ func Run(tree *tree.Tree, lang Language) (string, error) {
 		// Validate
 		//! Implement
 		log.Println("Enter golang")
-		standard := NewGoLibary("libraries/go_standard.yml")
+		standard := NewGoLibary("libraries/go_standard.json")
 		err = standard.Open()
 		if err != nil {
 			return "", err
 		}
+
+		defs := NewGoLibary("C:\\Users\\explo\\OneDrive\\Documents\\project\\definitions.json")
+		err = defs.Open()
+		if err != nil {
+			return "", err
+		}
+
 		log.Println("Passed lib")
 
-		gen := NewGoGenerator(tree, []*GoLibrary{standard}, "	")
+		gen := NewGoGenerator(tree, []*GoLibrary{standard, defs}, "	")
 		out, err = gen.Generate()
 		if err != nil {
 			return "", err

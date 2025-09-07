@@ -6,32 +6,54 @@ import (
 )
 
 func (gg *GoGenerator) op_if(node tree.Node) (string, error) {
-	log.Println("if")
 	gg.IncreaseIndent()
 	var result string
+	var ifCondition string
+	var ifBody string
+	var elseBody string
 
-	result += gg.Indent() + "if ("
+	result += gg.Indent() + "if "
 	for _, arg := range node.Fields {
-		// Break if not part of condition
-		if arg.Flags&tree.IsCondition == 0 {
-			break
+		if arg.Flags&tree.IsCondition != 0 {
+			if arg.Flags&tree.IsPointer != 0 {
+				if node, ok := gg.Tree.Nodes[arg.Value]; ok {
+					n, err := gg.Eval(node)
+					if err != nil {
+						return "", err
+					}
+
+					ifCondition += n
+				}
+			} else {
+				// TODO: Find out if this works (probably not well)
+				ifCondition += arg.Value
+			}
+			continue
 		}
 
-		if arg.Flags&tree.IsPointer != 0 {
-
+		// Should have `IsPointer` check but a pointer is garenteed in this senario
+		if node, ok := gg.Tree.Nodes[arg.Value]; ok {
+			n, err := gg.Eval(node)
+			if err != nil {
+				return "", err
+			}
+			if arg.Flags&tree.IsIfBody != 0 {
+				ifBody += n
+			} else if arg.Flags&tree.IsElseBody != 0 {
+				elseBody += n
+			}
 		}
 	}
-	result += ") {\n"
+	result += ifCondition + " {\n" + ifBody + gg.Indent() + "}"
 
-	//* TEMP
-	tmp, err := gg.op_funcCall(gg.Tree.Nodes[gg.NodeTracker[len(gg.NodeTracker)-1]])
-	if err != nil {
-		return "", err
+	// TODO: Add support for if...else chaining
+
+	if len(elseBody) > 0 {
+		result += " else {\n" + elseBody + gg.Indent() + "}\n"
 	}
-	result += tmp + gg.Indent() + "}\n"
-	err = gg.finishNode()
-	if err != nil {
-		return "", err
+
+	if nextExists := gg.finishNode(); !nextExists {
+		log.Println("Failed to find next")
 	}
 	gg.DecreaseIndent()
 	return result, nil
