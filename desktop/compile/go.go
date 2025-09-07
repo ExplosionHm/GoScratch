@@ -85,6 +85,43 @@ func (gg *GoGenerator) Eval(node tree.Node) (string, error) {
 	case tree.OP_OperDec:
 		log.Println("operDec")
 		return gg.op_operDec(node)
+	// Assignment Operators
+	case tree.OP_OperAssign:
+		log.Println("operAssign")
+		return gg.op_operAssign(node)
+	case tree.OP_OperAddAssign:
+		log.Println("operAddAssign")
+		return gg.op_operAddAssign(node)
+	case tree.OP_OperSubAssign:
+		log.Println("operSubAssign")
+		return gg.op_operSubAssign(node)
+	case tree.OP_OperMulAssign:
+		log.Println("operMulAssign")
+		return gg.op_operMulAssign(node)
+	case tree.OP_OperDivAssign:
+		log.Println("operDivAssign")
+		return gg.op_operDivAssign(node)
+	case tree.OP_OperModAssign:
+		log.Println("operModAssign")
+		return gg.op_operModAssign(node)
+	case tree.OP_OperBAndAssign:
+		log.Println("operBAndAssign")
+		return gg.op_operBAndAssign(node)
+	case tree.OP_OperBOrAssign:
+		log.Println("operBOrAssign")
+		return gg.op_operBorAssign(node)
+	case tree.OP_OperBXorAssign:
+		log.Println("operBXorAssign")
+		return gg.op_operBXorAssign(node)
+	case tree.OP_OperLShiftAssign:
+		log.Println("operLShiftAssign")
+		return gg.op_operLShiftAssign(node)
+	case tree.OP_OperRShiftAssign:
+		log.Println("operRShiftAssign")
+		return gg.op_operRShiftAssign(node)
+	case tree.OP_OperBClearAssign:
+		log.Println("operBCLearAssign")
+		return gg.op_operBclearAssign(node)
 	// Comparison Operators
 	case tree.OP_OperEqual:
 		log.Println("operEqual")
