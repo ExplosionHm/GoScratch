@@ -78,6 +78,13 @@ func (gg *GoGenerator) Next() iter.Seq2[string, error] {
 
 func (gg *GoGenerator) Eval(node tree.Node) (string, error) {
 	switch node.Opcode {
+	// Increment & decrement
+	case tree.OP_OperInc:
+		log.Println("operInc")
+		return gg.op_operInc(node)
+	case tree.OP_OperDec:
+		log.Println("operDec")
+		return gg.op_operDec(node)
 	// Comparison Operators
 	case tree.OP_OperEqual:
 		log.Println("operEqual")

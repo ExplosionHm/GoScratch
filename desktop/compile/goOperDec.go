@@ -5,9 +5,9 @@ import (
 	"opticode/desktop/tree"
 )
 
-func (gg *GoGenerator) op_operNot(node tree.Node) (string, error) {
+func (gg *GoGenerator) op_operDec(node tree.Node) (string, error) {
 	if len(node.Fields) != 1 {
-		return "", fmt.Errorf("NOT operation cannot take in more than or less than one values: %d values specified", len(node.Fields))
+		return "", fmt.Errorf("decrement operation cannot take in more than or less than one values: %d values specified", len(node.Fields))
 	}
 
 	var arg1 string
@@ -30,7 +30,7 @@ func (gg *GoGenerator) op_operNot(node tree.Node) (string, error) {
 		}
 	}
 	if hasParentheses {
-		return "!(" + arg1 + ")", nil
+		return "(" + arg1 + ")--", nil
 	}
-	return "!" + arg1, nil
+	return arg1 + "--", nil
 }
