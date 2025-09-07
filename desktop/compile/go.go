@@ -82,6 +82,21 @@ func (gg *GoGenerator) Eval(node tree.Node) (string, error) {
 	case tree.OP_OperEqual:
 		log.Println("operEqual")
 		return gg.op_operEqual(node)
+	case tree.OP_OperNotEqual:
+		log.Println("operNotEqual")
+		return gg.op_operNotEqual(node)
+	case tree.OP_OperLT:
+		log.Println("operLT")
+		return gg.op_operLT(node)
+	case tree.OP_OperLTorEqual:
+		log.Println("operLTorEqual")
+		return gg.OP_OperLTorEqual(node)
+	case tree.OP_OperGT:
+		log.Println("operGT")
+		return gg.op_operGT(node)
+	case tree.OP_OperGTorEqual:
+		log.Println("operGTorEqual")
+		return gg.op_operGTorEqual(node)
 		// Logical Operators
 	case tree.OP_OperAnd:
 		log.Println("operAnd")

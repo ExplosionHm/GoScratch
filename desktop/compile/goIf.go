@@ -50,6 +50,8 @@ func (gg *GoGenerator) op_if(node tree.Node) (string, error) {
 
 	if len(elseBody) > 0 {
 		result += " else {\n" + elseBody + gg.Indent() + "}\n"
+	} else {
+		result += "\n"
 	}
 
 	if nextExists := gg.finishNode(); !nextExists {
