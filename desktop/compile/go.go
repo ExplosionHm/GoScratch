@@ -6,6 +6,7 @@ import (
 	"log"
 	"opticode/desktop/tree"
 	"strings"
+	"sync"
 )
 
 const GoEntryId = "_entry"
@@ -25,6 +26,8 @@ type GoGenerator struct {
 	indentMul   int
 	NodeTracker []string
 	NodeIndexID string
+
+	mutex *sync.Mutex
 }
 
 func NewGoGenerator(t *tree.Tree, libs []*GoLibrary, indent string) *GoGenerator {
@@ -33,6 +36,7 @@ func NewGoGenerator(t *tree.Tree, libs []*GoLibrary, indent string) *GoGenerator
 		indent:      indent,
 		Libaries:    libs,
 		NodeTracker: []string{},
+		mutex:       &sync.Mutex{},
 	}
 }
 
@@ -59,10 +63,12 @@ func (gg *GoGenerator) Next() iter.Seq2[string, error] {
 	return func(yield func(string, error) bool) {
 		for {
 			if gg.NodeIndexID == GoExitId {
+				log.Println("exit cause: _exit node")
 				break
 			}
 			node, ok := gg.Tree.Nodes[gg.NodeIndexID]
 			if !ok {
+				log.Println("exit cause: unresolvable node")
 				if !yield("", fmt.Errorf("cannot resolve next node: %s -> ? (code: 1)", gg.NodeIndexID)) {
 					return
 				}
@@ -78,6 +84,13 @@ func (gg *GoGenerator) Next() iter.Seq2[string, error] {
 
 func (gg *GoGenerator) Eval(node tree.Node) (string, error) {
 	switch node.Opcode {
+	case tree.OP_Package:
+		log.Println("package")
+		return gg.op_package(node)
+	case tree.OP_Import:
+		log.Println("import")
+		return gg.op_import(node)
+
 	// Increment & decrement
 	case tree.OP_OperInc:
 		log.Println("operInc")
@@ -153,33 +166,19 @@ func (gg *GoGenerator) Eval(node tree.Node) (string, error) {
 		return gg.op_operNot(node)
 	case tree.OP_Func:
 		log.Println("func")
-		def, err := gg.op_func(node)
-		if err != nil {
-			return "", err
-		}
-		gg.FuncDefs = append(gg.FuncDefs, def)
-		return "", nil
+		return gg.op_func(node)
 	case tree.OP_FuncCall:
 		log.Println("funcCall")
 		return gg.op_funcCall(node)
 	case tree.OP_If:
 		log.Println("if")
 		return gg.op_if(node)
+	case tree.OP_Return:
+		log.Println("return")
+		return gg.op_return(node)
 	default:
 		return "", fmt.Errorf("invalid opcode: %d", node.Opcode)
 	}
-}
-
-func (gg *GoGenerator) finishNode() (nextExists bool) {
-	gg.NodeTracker = append(gg.NodeTracker, gg.NodeIndexID)
-
-	node, ok := gg.Tree.Nodes[gg.NodeIndexID]
-	if !ok {
-		return false
-	}
-	log.Printf("Finished node: %s Next: %s", gg.NodeIndexID, node.Next)
-	gg.NodeIndexID = node.Next
-	return true
 }
 
 func (gg *GoGenerator) Generate() (string, error) {
@@ -193,35 +192,56 @@ func (gg *GoGenerator) Generate() (string, error) {
 
 	gg.NodeIndexID = GoEntryId
 
-	gg.Builder.WriteString("package main\n\n")
-	gg.Builder.WriteString("//_functions")
-	gg.Builder.WriteString("\nfunc main() {\n")
-	if nextExists := gg.finishNode(); !nextExists {
-		return "", fmt.Errorf("failed to compile: program too short")
-	}
-
 	for buf, err := range gg.Next() {
 		if err != nil {
 			return "", err
 		}
 
-		gg.Builder.WriteString(buf) //TODO: Handler returns
-
+		_, err := gg.Builder.WriteString(buf)
+		if err != nil {
+			return "", err
+		}
 		if gg.NodeIndexID == GoExitId {
 			break
 		}
-	}
-
-	gg.Builder.WriteString("}")
-	log.Printf("length: %d", len(gg.FuncDefs))
-	for _, def := range gg.FuncDefs {
-		log.Println("TESTTSTSTWFW")
-		log.Println("Adding func defs")
-		gg.Builder.WriteString("\n" + def)
 	}
 
 	for _, l := range gg.Libaries {
 		l.Dispose()
 	}
 	return gg.Builder.String(), nil
+}
+
+func (gg *GoGenerator) finishNode(node tree.Node) (nextExists bool) {
+	gg.NodeTracker = append(gg.NodeTracker, gg.NodeIndexID)
+	if node.Next == nil {
+		log.Printf("Finished node: %s, Next: null", gg.NodeIndexID)
+		return false
+	}
+	log.Printf("Finished node: %s Next: %s", gg.NodeIndexID, *node.Next)
+	gg.NodeIndexID = *node.Next
+	return true
+}
+
+func (gg *GoGenerator) evalArgs(node tree.Node) ([]string, error) {
+	var result []string = []string{}
+	for _, f := range node.Fields {
+		if f.Flags&tree.IsPointer != 0 {
+			if node, ok := gg.Tree.Nodes[f.Value]; ok {
+				n, err := gg.Eval(node)
+				if err != nil {
+					return nil, err
+				}
+
+				result = append(result, n)
+			}
+		} else {
+			if f.Flags&tree.HasQuotes != 0 {
+				result = append(result, "\""+f.Value+"\"")
+			} else {
+				result = append(result, f.Value)
+			}
+		}
+	}
+	return result, nil
 }

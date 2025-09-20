@@ -39,7 +39,7 @@ func (gg *GoGenerator) op_funcCall(node tree.Node) (string, error) {
 	}
 
 	result += ")\n"
-	if nextExists := gg.finishNode(); !nextExists {
+	if nextExists := gg.finishNode(node); !nextExists {
 		log.Println("Failed to find next-")
 	}
 	gg.DecreaseIndent()

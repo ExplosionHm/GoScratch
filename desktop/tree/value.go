@@ -16,6 +16,7 @@ const (
 	IsFuncTypes
 	IsFuncArg
 	IsFuncBody
+	IsFuncReturns
 )
 
 type Value struct {

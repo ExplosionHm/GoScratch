@@ -6,8 +6,6 @@ import (
 	"opticode/desktop/tree"
 )
 
-const StandardLibaryPath = ""
-
 type Language string
 
 const (
@@ -48,9 +46,6 @@ func Run(tree *tree.Tree, lang Language) (string, error) {
 	default:
 		return "", fmt.Errorf("language not supported: %s", lang)
 	}
-
-	// Format
-	//! Implement
 
 	return out, nil
 }

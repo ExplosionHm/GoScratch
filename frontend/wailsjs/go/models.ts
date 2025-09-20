@@ -62,7 +62,7 @@ export namespace tree {
 	    opid: string;
 	    fields: Value[];
 	    parent?: string;
-	    next: string;
+	    next?: string;
 	    position?: number[];
 	    flags?: number;
 	    tab: string;

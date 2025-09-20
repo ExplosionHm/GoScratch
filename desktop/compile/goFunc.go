@@ -8,7 +8,8 @@ import (
 func (gg *GoGenerator) op_func(node tree.Node) (string, error) {
 	var result string
 	var args string
-	var funcBody string
+	var returns = []string{}
+	var body string
 	log.Println("Enter func")
 	result = "func "
 	// TODO: func ref implementation
@@ -30,14 +31,34 @@ func (gg *GoGenerator) op_func(node tree.Node) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				funcBody += n
+				body += n
 			}
 		}
+		// Should have `IsPointer` check but a pointer is garenteed to not be in this senario
+		if arg.Flags&tree.IsFuncReturns != 0 {
+			returns = append(returns, arg.Value+" "+arg.Type)
+		}
+
 	}
-	result += args + ") {\n"
-	result += funcBody + "}\n"
-	log.Println("exit func")
-	if nextExists := gg.finishNode(); !nextExists {
+	result += args + ")"
+	if len(returns) > 0 { //! this is bad code
+		if len(returns) > 1 {
+			result += "("
+		}
+		for i, re := range returns {
+			if i > 0 {
+				result += "," + re
+			} else {
+				result += re
+			}
+		}
+		if len(returns) > 1 {
+			result += ")"
+		}
+	}
+	result += " {\n" + body + "}\n\n"
+	log.Println("exit func", *node.Parent)
+	if nextExists := gg.finishNode(node); !nextExists {
 		log.Println("Failed to find next")
 	}
 	return result, nil

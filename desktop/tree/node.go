@@ -4,7 +4,10 @@ type NodeOp int32
 
 const (
 	OP_Package NodeOp = iota
-
+	OP_Import
+	_opPH1
+	_opPH2
+	_opPH3
 	// Arithmetic Operators
 
 	OP_OperAdd
@@ -63,10 +66,13 @@ const (
 	OP_ChanLeft  // "<-"
 	Op_ChanRight // "->"
 
+	_opPH4
+	_opPH5
 	OP_Func
 	OP_FuncCall
 
 	OP_If
+	OP_Return
 )
 
 type Node struct {
@@ -74,7 +80,7 @@ type Node struct {
 	Opid   string  `json:"opid"`
 	Fields []Value `json:"fields"`
 	Parent *string `json:"parent"`
-	Next   string  `json:"next"`
+	Next   *string `json:"next"`
 
 	// Only used if the node is a parent
 	Position [2]int `json:"position,omitempty"`
@@ -91,7 +97,7 @@ func NewNode(op NodeOp, flags Flags, fields ...Value) Node {
 		Opcode: op,
 		Fields: fields,
 		Parent: nil,
-		Next:   "",
+		Next:   nil,
 
 		Position: [2]int{},
 		Flags:    flags,
