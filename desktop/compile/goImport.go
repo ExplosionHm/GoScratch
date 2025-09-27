@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func (gg *GoGenerator) op_import(node tree.Node) (string, error) {
+func (gg *GoGenerator) op_import(node tree.Node) (string, *Error) {
 	var args = []string{}
 	for _, arg := range node.Fields {
 		args = append(args, arg.Type+" \""+arg.Value+"\"")

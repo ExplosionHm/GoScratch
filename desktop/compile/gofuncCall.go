@@ -1,13 +1,12 @@
 package compile
 
 import (
-	"fmt"
 	"log"
 	"opticode/desktop/tree"
 	"strings"
 )
 
-func (gg *GoGenerator) op_funcCall(node tree.Node, isParent ...bool) (string, error) {
+func (gg *GoGenerator) op_funcCall(node tree.Node, isParent ...bool) (string, *Error) {
 	var IsParent bool
 	var result string
 	if len(isParent) > 0 && isParent[0] {
@@ -18,7 +17,7 @@ func (gg *GoGenerator) op_funcCall(node tree.Node, isParent ...bool) (string, er
 
 	def := lookupFunc(gg.Libaries, node.Opid)
 	if def == nil {
-		return "", fmt.Errorf("undefined function: %s", node.Opid)
+		return "", Err(Fatal, "undefined function: %s", node.Opid)
 	}
 	result += node.Opid + "("
 
@@ -52,7 +51,7 @@ func (gg *GoGenerator) op_funcCall(node tree.Node, isParent ...bool) (string, er
 				}
 			}
 		} else {
-			return "", fmt.Errorf("syntax error: type mismatch for %s", node.Opid)
+			return "", Err(Fatal, "syntax error: type mismatch for %s", node.Opid)
 		}
 	}
 

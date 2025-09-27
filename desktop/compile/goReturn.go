@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func (gg *GoGenerator) op_return(node tree.Node) (string, error) {
+func (gg *GoGenerator) op_return(node tree.Node) (string, *Error) {
 	var result string
 	gg.IncreaseIndent()
 	var args = []string{}

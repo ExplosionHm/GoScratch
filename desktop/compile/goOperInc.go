@@ -1,13 +1,12 @@
 package compile
 
 import (
-	"fmt"
 	"opticode/desktop/tree"
 )
 
-func (gg *GoGenerator) op_operInc(node tree.Node) (string, error) {
+func (gg *GoGenerator) op_operInc(node tree.Node) (string, *Error) {
 	if len(node.Fields) != 1 {
-		return "", fmt.Errorf("increment operation cannot take in more than or less than one values: %d values specified", len(node.Fields))
+		return "", Err(Fatal, "increment operation cannot take in more than or less than one values: %d values specified", len(node.Fields))
 	}
 
 	var arg1 string

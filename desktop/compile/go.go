@@ -59,8 +59,8 @@ func (gg *GoGenerator) Indent() string {
 	return strings.Repeat(gg.indent, gg.indentMul)
 }
 
-func (gg *GoGenerator) Next() iter.Seq2[string, error] {
-	return func(yield func(string, error) bool) {
+func (gg *GoGenerator) Next() iter.Seq2[string, *Error] {
+	return func(yield func(string, *Error) bool) {
 		for {
 			if gg.NodeIndexID == GoExitId {
 				log.Println("exit cause: _exit node")
@@ -69,7 +69,7 @@ func (gg *GoGenerator) Next() iter.Seq2[string, error] {
 			node, ok := gg.Tree.Nodes[gg.NodeIndexID]
 			if !ok {
 				log.Println("exit cause: unresolvable node")
-				if !yield("", fmt.Errorf("cannot resolve next node: %s -> ? (code: 1)", gg.NodeIndexID)) {
+				if !yield("", Err(Fatal, "cannot resolve next node: %s -> ? (code: 1)", gg.NodeIndexID)) {
 					return
 				}
 			}
@@ -82,7 +82,7 @@ func (gg *GoGenerator) Next() iter.Seq2[string, error] {
 	}
 }
 
-func (gg *GoGenerator) Eval(node tree.Node, isParent ...bool) (string, error) {
+func (gg *GoGenerator) Eval(node tree.Node, isParent ...bool) (string, *Error) {
 	switch node.Opcode {
 	case tree.OP_Package:
 		log.Println("package")
@@ -177,7 +177,7 @@ func (gg *GoGenerator) Eval(node tree.Node, isParent ...bool) (string, error) {
 		log.Println("return")
 		return gg.op_return(node)
 	default:
-		return "", fmt.Errorf("invalid opcode: %d", node.Opcode)
+		return "", Err(Warn, "invalid opcode: %d", node.Opcode)
 	}
 }
 
@@ -194,7 +194,10 @@ func (gg *GoGenerator) Generate() (string, error) {
 
 	for buf, err := range gg.Next() {
 		if err != nil {
-			return "", err
+			if err.Code == Fatal {
+				return "", err
+			}
+			log.Println(err.Error())
 		}
 
 		_, err := gg.Builder.WriteString(buf)
@@ -223,7 +226,7 @@ func (gg *GoGenerator) finishNode(node tree.Node) (nextExists bool) {
 	return true
 }
 
-func (gg *GoGenerator) evalArgs(node tree.Node) ([]string, error) {
+func (gg *GoGenerator) evalArgs(node tree.Node) ([]string, *Error) {
 	var result []string = []string{}
 	for _, f := range node.Fields {
 		if f.Flags&tree.IsPointer != 0 {

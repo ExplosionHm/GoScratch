@@ -30,11 +30,13 @@ func main() {
 		Title:            "Opticode",
 		Width:            1024,
 		Height:           768,
+		MinWidth:         480,
+		MinHeight:        360,
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54},
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		Bind: []interface{}{
+		Bind: []any{
 			app,
 			app.Tree,
 		},

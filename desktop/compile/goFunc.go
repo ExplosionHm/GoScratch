@@ -3,25 +3,19 @@ package compile
 import (
 	"log"
 	"opticode/desktop/tree"
+	"strings"
 )
 
-func (gg *GoGenerator) op_func(node tree.Node) (string, error) {
-	var result string
-	var args string
+func (gg *GoGenerator) op_func(node tree.Node) (string, *Error) {
+	var result strings.Builder
+	var args = []string{}
 	var returns = []string{}
-	var body string
-	log.Println("Enter func")
-	result = "func "
+	var body strings.Builder
 	// TODO: func ref implementation
-	result += node.Opid + "("
+	result.WriteString("func " + node.Opid + "(")
 	for _, arg := range node.Fields {
-		log.Println("Enter field range")
 		if arg.Flags&tree.IsFuncArg != 0 {
-			if len(args) > 0 {
-				args += "," + arg.Value + " " + arg.Type
-			} else {
-				args += arg.Value + " " + arg.Type
-			}
+			args = append(args, arg.Value+" "+arg.Type)
 		}
 
 		// Should have `IsPointer` check but a pointer is garenteed in this senario
@@ -31,7 +25,7 @@ func (gg *GoGenerator) op_func(node tree.Node) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				body += n
+				body.WriteString(n)
 			}
 		}
 		// Should have `IsPointer` check but a pointer is garenteed to not be in this senario
@@ -40,26 +34,20 @@ func (gg *GoGenerator) op_func(node tree.Node) (string, error) {
 		}
 
 	}
-	result += args + ")"
-	if len(returns) > 0 { //! this is bad code
-		if len(returns) > 1 {
-			result += "("
-		}
-		for i, re := range returns {
-			if i > 0 {
-				result += "," + re
-			} else {
-				result += re
-			}
-		}
-		if len(returns) > 1 {
-			result += ")"
+
+	result.WriteString(strings.Join(args, ", ") + ")")
+	var reLen = len(returns)
+	if reLen > 0 {
+		re := strings.Join(returns, ", ")
+		if reLen > 1 {
+			result.WriteString("(" + re + ")")
+		} else {
+			result.WriteString(re)
 		}
 	}
-	result += " {\n" + body + "}\n\n"
-	log.Println("exit func", *node.Parent)
+	result.WriteString(" {\n" + body.String() + "}\n\n")
 	if nextExists := gg.finishNode(node); !nextExists {
 		log.Println("Failed to find next")
 	}
-	return result, nil
+	return result.String(), nil
 }

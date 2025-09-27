@@ -5,7 +5,7 @@ import (
 	"opticode/desktop/tree"
 )
 
-func (gg *GoGenerator) op_if(node tree.Node) (string, error) {
+func (gg *GoGenerator) op_if(node tree.Node) (string, *Error) {
 	gg.IncreaseIndent()
 	var result string
 	var ifCondition string

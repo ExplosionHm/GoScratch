@@ -6,10 +6,44 @@ import (
 	"opticode/desktop/tree"
 )
 
+type ErrorCode uint8
+
+const (
+	Warn ErrorCode = iota
+	Fatal
+)
+
+type Error struct {
+	err  string
+	Code ErrorCode
+}
+
+func Err(c ErrorCode, format string, v ...any) *Error {
+	return &Error{
+		err:  fmt.Sprintf(format, v...),
+		Code: c,
+	}
+}
+
+func (e *Error) ErrorLevel() string {
+	switch e.Code {
+	case Warn:
+		return "WARN"
+	case Fatal:
+		return "FATAL"
+	default:
+		return "UNKNOWN"
+	}
+}
+
+func (e *Error) Error() string {
+	return e.ErrorLevel() + " | " + e.err
+}
+
 type Language string
 
 const (
-	Golang = "Go"
+	Golang Language = "Go"
 )
 
 // Code generation pipeline:
@@ -35,7 +69,6 @@ func Run(tree *tree.Tree, lang Language) (string, error) {
 		if err != nil {
 			return "", err
 		}
-
 		log.Println("Passed lib")
 
 		gen := NewGoGenerator(tree, []*GoLibrary{standard, defs}, "	")
