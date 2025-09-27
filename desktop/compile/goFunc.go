@@ -27,7 +27,7 @@ func (gg *GoGenerator) op_func(node tree.Node) (string, error) {
 		// Should have `IsPointer` check but a pointer is garenteed in this senario
 		if arg.Flags&tree.IsFuncBody != 0 {
 			if node, ok := gg.Tree.Nodes[arg.Value]; ok {
-				n, err := gg.Eval(node)
+				n, err := gg.Eval(node, true)
 				if err != nil {
 					return "", err
 				}

@@ -82,7 +82,7 @@ func (gg *GoGenerator) Next() iter.Seq2[string, error] {
 	}
 }
 
-func (gg *GoGenerator) Eval(node tree.Node) (string, error) {
+func (gg *GoGenerator) Eval(node tree.Node, isParent ...bool) (string, error) {
 	switch node.Opcode {
 	case tree.OP_Package:
 		log.Println("package")
@@ -169,7 +169,7 @@ func (gg *GoGenerator) Eval(node tree.Node) (string, error) {
 		return gg.op_func(node)
 	case tree.OP_FuncCall:
 		log.Println("funcCall")
-		return gg.op_funcCall(node)
+		return gg.op_funcCall(node, isParent...)
 	case tree.OP_If:
 		log.Println("if")
 		return gg.op_if(node)

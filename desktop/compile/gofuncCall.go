@@ -7,18 +7,36 @@ import (
 	"strings"
 )
 
-func (gg *GoGenerator) op_funcCall(node tree.Node) (string, error) {
-	gg.IncreaseIndent()
+func (gg *GoGenerator) op_funcCall(node tree.Node, isParent ...bool) (string, error) {
+	var IsParent bool
 	var result string
+	if len(isParent) > 0 && isParent[0] {
+		IsParent = true
+		gg.IncreaseIndent()
+		result = gg.Indent()
+	}
+
 	def := lookupFunc(gg.Libaries, node.Opid)
 	if def == nil {
 		return "", fmt.Errorf("undefined function: %s", node.Opid)
 	}
-	result = gg.Indent() + node.Opid + "("
+	result += node.Opid + "("
 
 	for i, v := range node.Fields {
 		argIndex := nearestArgument(len(def.Arguments), i)
 		if v.Type == def.Arguments[argIndex][1] || strings.HasSuffix(def.Arguments[argIndex][1], "Type") { // TODO: Remove hardcoded value "Type"
+
+			if v.Flags&tree.IsPointer != 0 {
+				if node, ok := gg.Tree.Nodes[v.Value]; ok {
+					n, err := gg.Eval(node)
+					if err != nil {
+						return "", err
+					}
+					result += n
+					continue
+				}
+			}
+
 			// TODO: Can be improved
 			if v.Flags&tree.HasQuotes != 0 {
 				if i > 0 {
@@ -38,11 +56,15 @@ func (gg *GoGenerator) op_funcCall(node tree.Node) (string, error) {
 		}
 	}
 
-	result += ")\n"
-	if nextExists := gg.finishNode(node); !nextExists {
-		log.Println("Failed to find next-")
+	result += ")"
+	if IsParent {
+		result += "\n"
+		if nextExists := gg.finishNode(node); !nextExists {
+			log.Println("Failed to find next-")
+
+		}
+		gg.DecreaseIndent()
 	}
-	gg.DecreaseIndent()
 	return result, nil
 }
 
