@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"opticode/desktop/compile"
+	"opticode/desktop/compile/golang"
 	"opticode/desktop/project"
 	"opticode/desktop/tree"
 	"opticode/utils"
@@ -48,11 +49,11 @@ func (a *App) GenerateCode(dir string) error {
 	if err != nil {
 		return err
 	}
-	end := time.Since(start).Nanoseconds()
-	log.Println("Server sent: "+out, "Completed in "+strconv.Itoa(int(end))+"ns")
+	end := time.Since(start).Milliseconds()
+	log.Println("Server sent: "+out, "Completed in "+strconv.Itoa(int(end))+"ms")
 
 	if !utils.FileExists(path.Join(dir, "go.mod")) {
-		err = compile.InitGoProject(dir, "placeholder")
+		err = golang.InitGoProject(dir, "placeholder")
 		if err != nil {
 			return err
 		}

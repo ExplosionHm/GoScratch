@@ -142,12 +142,21 @@
     margin: 0;
     top: 0;
     padding-top: 1px;
-    color: #17a3ad;
     padding: 10px;
     font-size: 24px;
     font-weight: bold;
     text-justify: auto;
     user-select: none;
+  }
+
+  .card:hover {
+    scale: 1.01;
+    transition: 200ms;
+  }
+
+  .card:active {
+    scale: 1;
+    transition: 100ms;
   }
 
   .card p {
@@ -159,9 +168,11 @@
   }
 
   .card-cyan {
+    color: #17a3ad;
     background: #d6f0f2;
   }
   .card-blue {
+    color: #6d88b4;
     background: #d6e6ff;
   }
   .card-purple {
