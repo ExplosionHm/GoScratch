@@ -1,23 +1,67 @@
 package project
 
-import "opticode/desktop/tree"
+import (
+	"encoding/json"
+	"os"
+)
 
 type LibraryPathFlag uint32
 
-type ProjectHeader struct {
-	Name      string
-	Id        string
-	Libraries map[string]LibraryPathFlag
+type Header struct {
+	Name          string                     `json:"name"`
+	Id            string                     `json:"id"`
+	Owner         string                     `json:"owner"`
+	Collaborators []string                   `json:"collaborators"`
+	Language      string                     `json:"language"`
+	Libraries     map[string]LibraryPathFlag `json:"libraries"`
 }
 
 type Project struct {
-	ProjectHeader
-	Tree *tree.Tree
+	Header      `json:"header"`
+	Appearances `json:"appearances"`
+	Assets      []string `json:"assets"`
+
+	Program []byte
 }
 
-func NewProject(header ProjectHeader, dir string) *Project {
+type Appearances struct {
+	Theme int              `json:"theme"`
+	Nodes []NodeAppearance `json:"nodes"`
+}
+
+type NodeAppearance struct {
+	Color uint32
+}
+
+func NewProject(header Header, appearances Appearances, assets ...string) *Project {
 	return &Project{
-		header,
-		tree.NewTree(),
+		Header:      header,
+		Appearances: appearances,
+		Program:     nil,
+		Assets:      assets,
 	}
+}
+
+func (p *Project) UpdateProgramFile(path string) error {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	p.Program = content
+	return nil
+}
+
+func (p *Project) ToJson() ([]byte, error) {
+	return json.Marshal(p)
+}
+
+func LoadProject(data []byte) *Project {
+	//! Should add safety check
+	var project *Project
+	err := json.Unmarshal(data, project)
+	if err != nil {
+		return nil
+	}
+	return project
 }

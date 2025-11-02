@@ -1,0 +1,41 @@
+namespace opticode;
+
+enum NodeType : byte {
+  NONE = 0,
+  BinaryOp,
+  Literal,
+  Identifier
+}
+
+union NodeUnion {
+  BinaryOp,
+  Literal,
+  Identifier
+}
+
+table BinaryOp {
+  left:int;
+  right:int;
+  op:string; // could also be an enum
+}
+
+table Literal {
+  value:string;
+}
+
+table Identifier {
+  name:string;
+}
+
+table Node {
+  id:int;             // unique node id
+  parent:int;         // parent node index
+  next:int;           // next sibling index
+  node:NodeUnion;     // actual node contents
+}
+
+table Program {
+  nodes:[Node];       // flat array of all nodes
+}
+
+root_type Program;

@@ -38,7 +38,6 @@ func main() {
 		},
 		Bind: []any{
 			app,
-			app.Tree,
 		},
 		OnStartup: app.OnStartup,
 		Debug: options.Debug{

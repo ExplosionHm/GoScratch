@@ -61,3 +61,13 @@ func (e *Error) ErrorLevel() string {
 func (e *Error) Error() string {
 	return e.ErrorLevel() + " | " + e.err
 }
+
+func PackRange(min, max uint16) uint32 {
+	return uint32(min)<<16 | uint32(max)
+}
+
+func UnpackRange(k uint32) (uint16, uint16) {
+	min := uint16(k >> 16)
+	max := uint16(k & 0xFFFF)
+	return min, max
+}

@@ -2,48 +2,33 @@ package desktop
 
 import (
 	"context"
-	"log"
-	"opticode/desktop/compile"
-	"opticode/desktop/compile/golang"
 	"opticode/desktop/project"
-	"opticode/desktop/tree"
-	"opticode/utils"
 	"os"
-	"os/exec"
-	"path"
-	"strconv"
-	"time"
 )
 
 type App struct {
 	ctx     context.Context
-	Tree    *tree.Tree
 	Project *project.Project
 }
 
 func NewApp() *App {
-	t := tree.NewTree()
-
-	return &App{
-		Tree: t,
-	}
+	return &App{}
 }
 
 func (a *App) OnStartup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-func (a *App) OpenProject(dir string) (*project.Project, error) {
-	//! Implement
-	return project.NewProject(project.ProjectHeader{
-		Id:        "test",
-		Name:      "TEST",
-		Libraries: map[string]project.LibraryPathFlag{},
-	}, ""), nil
+func (a *App) OpenProject(projectFile string) (*project.Project, error) {
+	content, err := os.ReadFile(projectFile)
+	if err != nil {
+		return nil, err
+	}
+	return project.LoadProject(content), nil
 }
 
 func (a *App) GenerateCode(dir string) error {
-	log.Println("Enter gen")
+	/* log.Println("Enter gen")
 	start := time.Now()
 	out, err := compile.Run(a.Tree, compile.Golang)
 	if err != nil {
@@ -77,6 +62,6 @@ func (a *App) GenerateCode(dir string) error {
 	if err != nil {
 		return err
 	}
-
+	*/
 	return nil
 }

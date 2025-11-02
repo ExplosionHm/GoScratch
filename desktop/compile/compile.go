@@ -1,10 +1,8 @@
 package compile
 
 import (
+	"bytes"
 	"fmt"
-	"log"
-	"opticode/desktop/compile/golang"
-	"opticode/desktop/tree"
 )
 
 type Language string
@@ -15,23 +13,16 @@ const (
 
 // Code generation pipeline:
 // Validate -> Translate -> Format
-func Run(tree *tree.Tree, lang Language) (string, error) {
+func Run(programBuf *bytes.Buffer, lang Language) (string, error) {
 	var out string
-	var err error
+	//var err error
 
 	// Translate
 	switch lang {
 	case Golang:
 		// Validate
-		//! Implement
-		log.Println("Enter golang")
-		standard := golang.NewGoLibary("libraries/go_standard.json")
-		err = standard.Open()
-		if err != nil {
-			return "", err
-		}
 
-		defs := golang.NewGoLibary("C:\\Users\\explo\\OneDrive\\Documents\\project\\definitions.json")
+		/* defs := golang.NewGoLibary("C:\\Users\\explo\\OneDrive\\Documents\\project\\definitions.json")
 		err = defs.Open()
 		if err != nil {
 			return "", err
@@ -42,7 +33,7 @@ func Run(tree *tree.Tree, lang Language) (string, error) {
 		out, err = gen.Generate()
 		if err != nil {
 			return "", err
-		}
+		} */
 	default:
 		return "", fmt.Errorf("language not supported: %s", lang)
 	}
