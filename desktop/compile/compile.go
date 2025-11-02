@@ -3,6 +3,7 @@ package compile
 import (
 	"bytes"
 	"fmt"
+	"opticode/desktop/compile/golang"
 )
 
 type Language string
@@ -22,18 +23,7 @@ func Run(programBuf *bytes.Buffer, lang Language) (string, error) {
 	case Golang:
 		// Validate
 
-		/* defs := golang.NewGoLibary("C:\\Users\\explo\\OneDrive\\Documents\\project\\definitions.json")
-		err = defs.Open()
-		if err != nil {
-			return "", err
-		}
-		log.Println("Passed lib")
-
-		gen := golang.NewGoGenerator(tree, []*golang.GoLibrary{standard, defs}, "	")
-		out, err = gen.Generate()
-		if err != nil {
-			return "", err
-		} */
+		golang.Compile(nil, programBuf.Bytes())
 	default:
 		return "", fmt.Errorf("language not supported: %s", lang)
 	}
