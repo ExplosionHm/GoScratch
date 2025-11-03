@@ -7,7 +7,7 @@ import (
 
 	"log"
 
-	flatbuffers "github.com/google/flatbuffers/go"
+	fb "github.com/google/flatbuffers/go"
 )
 
 type GoFile struct {
@@ -25,17 +25,22 @@ type DeserializeNode struct {
 }
 
 type Generator struct {
-	buf *[]byte
-	lut *map[uint32][]byte
+	program *tree.Program
+	buf     *[]byte
+	lut     *map[uint32][]byte
+
+	nodeOffsets map[int64]int
 	// nodeId -> deserialized node
 	nodes map[int64]*DeserializeNode
 }
 
-func NewGenerator(lut *map[uint32][]byte, buf *[]byte) *Generator {
+func NewGenerator(program *tree.Program, lut *map[uint32][]byte, buf *[]byte) *Generator {
 	return &Generator{
-		buf:   buf,
-		lut:   lut,
-		nodes: make(map[int64]*DeserializeNode), //! Should estimate total size
+		program:     program,
+		buf:         buf,
+		lut:         lut,
+		nodeOffsets: make(map[int64]int),
+		nodes:       make(map[int64]*DeserializeNode), //! Should estimate total size
 	}
 }
 
@@ -46,6 +51,17 @@ func (g *Generator) LookUp(i uint32) ([]byte, error) {
 	return nil, fmt.Errorf("look-up failed: cannot find item with index %d", i)
 }
 
+// Can return nil
+func (g *Generator) GetNode(id int64) *tree.Node {
+	i, ok := g.nodeOffsets[id]
+	if !ok {
+		return nil
+	}
+	var node *tree.Node
+	g.program.Nodes(node, i)
+
+}
+
 func (g *Generator) Write(id int64, flags tree.Flag, path string, content *[]byte) {
 	g.nodes[id] = &DeserializeNode{
 		Flags:   flags,
@@ -54,6 +70,10 @@ func (g *Generator) Write(id int64, flags tree.Flag, path string, content *[]byt
 
 		Span: [2]uint32{},
 	}
+}
+
+func (g *Generator) Export() ([]*GoFile, error) {
+	return nil, nil
 }
 
 // Compiles buffer into go files.
@@ -92,7 +112,7 @@ func Compile(lut map[uint32][]byte, buf []byte) ([]*GoFile, error) {
 }
 
 func (g *Generator) Eval(node *tree.Node) {
-	unionTable := new(flatbuffers.Table)
+	unionTable := new(fb.Table)
 
 	if node.Node(unionTable) {
 		nodeType := node.NodeType()
@@ -134,6 +154,8 @@ func (g *Generator) EvalType1(opcode tree.Opcode, node *tree.Type1, flags tree.F
 	switch opcode {
 	case 0:
 		return g.op_package(node, flags)
+	case 1:
+		return g.op_import(node, flags)
 	}
 	return nil, nil
 }
