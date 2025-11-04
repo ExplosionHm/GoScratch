@@ -5,15 +5,21 @@ type TokenKind uint16
 const (
 	TokenEOF TokenKind = iota
 	TokenSpace
+	TokenNewLine
+	TokenQuotation
 	TokenTab
 	TokenPackage
+	TokenImport
 )
 
 var tokens = [][]byte{
 	[]byte(""),
 	[]byte(" "),
+	[]byte("\n"),
+	[]byte("\""),
 	[]byte("    "),
 	[]byte("package"),
+	[]byte("import"),
 }
 
 func (t TokenKind) Bytes() []byte {

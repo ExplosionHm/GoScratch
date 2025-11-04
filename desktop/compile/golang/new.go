@@ -5,8 +5,6 @@ import (
 	"opticode/desktop/tree"
 	"sync"
 
-	"log"
-
 	fb "github.com/google/flatbuffers/go"
 )
 
@@ -35,11 +33,20 @@ type Generator struct {
 }
 
 func NewGenerator(program *tree.Program, lut *map[uint32][]byte, buf *[]byte) *Generator {
+	var nodeOffset = make(map[int64]int)
+
+	for i := range program.NodesLength() {
+		var n *tree.Node
+		program.Nodes(n, i)
+
+		nodeOffset[n.Id()] = i
+	}
+
 	return &Generator{
 		program:     program,
 		buf:         buf,
 		lut:         lut,
-		nodeOffsets: make(map[int64]int),
+		nodeOffsets: nodeOffset,
 		nodes:       make(map[int64]*DeserializeNode), //! Should estimate total size
 	}
 }
@@ -60,6 +67,7 @@ func (g *Generator) GetNode(id int64) *tree.Node {
 	var node *tree.Node
 	g.program.Nodes(node, i)
 
+	return node
 }
 
 func (g *Generator) Write(id int64, flags tree.Flag, path string, content *[]byte) {
@@ -83,7 +91,7 @@ func Compile(lut map[uint32][]byte, buf []byte) ([]*GoFile, error) {
 	program := tree.GetRootAsProgram(buf, 0)
 
 	nodesLength := program.NodesLength()
-	gen := NewGenerator(&lut, &buf)
+	gen := NewGenerator(program, &lut, &buf)
 
 	const maxRoutines = 5 // maximum allowed concurrent goroutines
 
@@ -111,7 +119,7 @@ func Compile(lut map[uint32][]byte, buf []byte) ([]*GoFile, error) {
 	return nil, nil
 }
 
-func (g *Generator) Eval(node *tree.Node) {
+func (g *Generator) Eval(node *tree.Node) ([]byte, error) {
 	unionTable := new(fb.Table)
 
 	if node.Node(unionTable) {
@@ -124,8 +132,7 @@ func (g *Generator) Eval(node *tree.Node) {
 			var err error
 			out, err = g.EvalType1(node.Opcode(), type1, node.Flags())
 			if err != nil {
-				log.Println(err) //! Add proper error handling
-				return
+				return nil, err
 			}
 		case tree.NodeUnionType2:
 			type2 := new(tree.Type2)
@@ -133,8 +140,7 @@ func (g *Generator) Eval(node *tree.Node) {
 			var err error
 			out, err = g.EvalType2(node.Opcode(), type2, node.Flags())
 			if err != nil {
-				log.Println(err) //! Add proper error handling
-				return
+				return nil, err
 			}
 		case tree.NodeUnionType3:
 			type3 := new(tree.Type3)
@@ -142,12 +148,14 @@ func (g *Generator) Eval(node *tree.Node) {
 			var err error
 			out, err = g.EvalType3(node.Opcode(), type3, node.Flags())
 			if err != nil {
-				log.Println(err) //! Add proper error handling
-				return
+				return nil, err
 			}
+		case tree.NodeUnionNONE:
+			return nil, fmt.Errorf("failed to determine node type of node: %d", node.Id())
 		}
 		g.Write(node.Id(), node.Flags(), "main.go", &out)
 	}
+	return nil, fmt.Errorf("failed to access union of node: %d", node.Id())
 }
 
 func (g *Generator) EvalType1(opcode tree.Opcode, node *tree.Type1, flags tree.Flag) ([]byte, error) {
