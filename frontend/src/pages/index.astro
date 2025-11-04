@@ -1,70 +1,15 @@
----
-import Layout from "../layouts/Layout.astro";
----
+<main>
+  <button id="test"></button>
+  <script>
+    import * as app from "../../wailsjs/go/desktop/App";
 
-<Layout title="opticode">
-  <main>
-    <button id="gen">Generate Code</button>
-    <button id="proj">Open Project</button>
-    <a href="/test">Go to test page</a>
-  </main>
-</Layout>
-
-<style>
-  main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem;
-  }
-
-  h1 {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-</style>
-
-<script>
-  import * as runtime from "../../wailsjs/runtime/runtime";
-  import * as model from "../../wailsjs/go/models";
-  import * as app from "../../wailsjs/go/desktop/App";
-  import * as tree from "../../wailsjs/go/tree/Tree";
-
-  document.addEventListener("DOMContentLoaded", function () {
-    const gen = document.getElementById("gen");
-    if (gen) {
-      gen.addEventListener("click", generate);
-    }
-    const proj = document.getElementById("proj");
-    if (proj) {
-      proj.addEventListener("click", project);
-    }
-  });
-
-  async function generate() {
-    runtime.LogDebug("click generate button");
-
-    try {
-      await tree.OpenFile(
-        "C:/Users/explo/OneDrive/Documents/project/tree.json"
-      );
-      await app.GenerateCode("C:/Users/explo/OneDrive/Documents/project/");
-    } catch (err) {
-      runtime.LogError(String(err));
-    }
-  }
-
-  async function project() {
-    runtime.LogDebug("click project button");
-    try {
-      const project = await app.OpenProject(
-        "C:/Users/explo/OneDrive/Documents/project/"
-      );
-      console.log(project);
-      runtime.LogPrint(JSON.stringify(project));
-    } catch (err) {
-      runtime.LogError(String(err));
-    }
-  }
-</script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const test = document.getElementById("test");
+      if (test) {
+        test.addEventListener("click", (ev) => {
+          alert("HELLO WORLD");
+        });
+      }
+    });
+  </script>
+</main>

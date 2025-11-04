@@ -7,6 +7,8 @@ const (
 	TokenSpace
 	TokenNewLine
 	TokenQuotation
+	TokenParenLeft  // (
+	TokenParenRight // )
 	TokenTab
 	TokenPackage
 	TokenImport
@@ -17,6 +19,8 @@ var tokens = [][]byte{
 	[]byte(" "),
 	[]byte("\n"),
 	[]byte("\""),
+	[]byte("("),
+	[]byte(")"),
 	[]byte("    "),
 	[]byte("package"),
 	[]byte("import"),

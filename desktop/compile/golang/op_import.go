@@ -26,11 +26,16 @@ func (g *Generator) op_import(node *tree.Type1, flags tree.Flag) ([]byte, error)
 				return nil, err
 			}
 			//! This preforms an allocation each cycle. (not good)
-			buf.Write(JoinBytes(out, TokenNewLine.Bytes()))
+			buf.Write(JoinBytes(TokenTab.Bytes(), out, TokenNewLine.Bytes()))
 		} else {
 			return nil, fmt.Errorf("import node fields can only be pointers")
 		}
 	}
 
-	return nil, nil
+	if length > 1 {
+		//! messy and needs work
+		return JoinBytes(TokenImport.Bytes(), TokenSpace.Bytes(), TokenParenLeft.Bytes(), TokenNewLine.Bytes(), buf.Bytes(), TokenParenRight.Bytes()), nil
+	}
+	//! includes the tab seperator (not intended)
+	return JoinBytes(TokenImport.Bytes(), buf.Bytes()), nil
 }
