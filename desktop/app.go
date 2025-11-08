@@ -2,8 +2,11 @@ package desktop
 
 import (
 	"context"
+	"log"
+	"opticode/desktop/compile/golang"
 	"opticode/desktop/project"
 	"os"
+	"time"
 )
 
 type App struct {
@@ -27,41 +30,15 @@ func (a *App) OpenProject(projectFile string) (*project.Project, error) {
 	return project.LoadProject(content), nil
 }
 
-func (a *App) GenerateCode(dir string) error {
-	/* log.Println("Enter gen")
+func (a *App) Compile(buf []byte, lut map[uint32][]byte, outDir string) error {
 	start := time.Now()
-	out, err := compile.Run(a.Tree, compile.Golang)
+	files, err := golang.Compile(&buf, lut)
 	if err != nil {
 		return err
 	}
-	end := time.Since(start).Milliseconds()
-	log.Println("Server sent: "+out, "Completed in "+strconv.Itoa(int(end))+"ms")
+	log.Println(len(files))
 
-	if !utils.FileExists(path.Join(dir, "go.mod")) {
-		err = golang.InitGoProject(dir, "placeholder")
-		if err != nil {
-			return err
-		}
-	}
+	log.Printf("Time elapsed: %dms", time.Since(start).Milliseconds())
 
-	err = os.WriteFile(path.Join(dir, "main.go"), []byte(out), os.ModeAppend)
-	if err != nil {
-		return err
-	}
-
-	cmd := exec.Command("go", "run", ".")
-	cmd.Dir = dir
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	err = cmd.Start()
-	if err != nil {
-		return err
-	}
-	err = cmd.Wait()
-	if err != nil {
-		return err
-	}
-	*/
 	return nil
 }

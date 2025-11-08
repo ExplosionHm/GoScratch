@@ -87,11 +87,11 @@ func (g *Generator) Export() ([]*GoFile, error) {
 // Compiles buffer into go files.
 // lut -> Look-up table for strings used in the program
 // buf -> flatbuffer's buffer
-func Compile(lut map[uint32][]byte, buf []byte) ([]*GoFile, error) {
-	program := tree.GetRootAsProgram(buf, 0)
+func Compile(buf *[]byte, lut map[uint32][]byte) ([]*GoFile, error) {
+	program := tree.GetRootAsProgram(*buf, 0)
 
 	nodesLength := program.NodesLength()
-	gen := NewGenerator(program, &lut, &buf)
+	gen := NewGenerator(program, &lut, buf)
 
 	const maxRoutines = 5 // maximum allowed concurrent goroutines
 
@@ -170,6 +170,8 @@ func (g *Generator) EvalType1(opcode tree.Opcode, node *tree.Type1, flags tree.F
 
 func (g *Generator) EvalType2(opcode tree.Opcode, node *tree.Type2, flags tree.Flag) ([]byte, error) {
 	switch opcode {
+	case 2:
+		return g.op_importValue(node, flags)
 	}
 	return nil, nil
 }
