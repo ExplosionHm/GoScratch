@@ -16,14 +16,7 @@ import (
 var assets embed.FS
 
 func main() {
-	log.SetOutput(os.Stdout)
-	log.Println("Debugging enabled")
-	// This doesn't work that well
-	/* file, err := os.OpenFile("./logs/"+time.Now().Format(time.DateOnly)+".log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		panic(err)
-	}
-	log.SetOutput(file) */
+	log.SetOutput(os.Stdout) // Set wails logging to default std output
 
 	app := desktop.NewApp()
 	err := wails.Run(&options.App{
@@ -38,8 +31,10 @@ func main() {
 		},
 		Bind: []any{
 			app,
+			app.Project,
 		},
-		OnStartup: app.OnStartup,
+		OnStartup:  app.Initalize,
+		OnShutdown: app.Exit,
 		Debug: options.Debug{
 			OpenInspectorOnStartup: true,
 		},

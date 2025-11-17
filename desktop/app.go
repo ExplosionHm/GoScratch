@@ -5,7 +5,6 @@ import (
 	"log"
 	"opticode/desktop/compile/golang"
 	"opticode/desktop/project"
-	"os"
 	"time"
 )
 
@@ -14,20 +13,23 @@ type App struct {
 	Project *project.Project
 }
 
+// All methods of App are exposed to the frontend
+
 func NewApp() *App {
 	return &App{}
 }
 
-func (a *App) OnStartup(ctx context.Context) {
+func (a *App) Initalize(ctx context.Context) {
 	a.ctx = ctx
+	a.Project = project.NewProject(project.Header{}, project.Appearances{}, "")
+}
+
+func (a *App) Exit(ctx context.Context) {
+	log.Println("Shutting down...")
 }
 
 func (a *App) OpenProject(projectFile string) (*project.Project, error) {
-	content, err := os.ReadFile(projectFile)
-	if err != nil {
-		return nil, err
-	}
-	return project.LoadProject(content), nil
+	return project.LoadProjectFromFile(projectFile)
 }
 
 func (a *App) Compile(buf []byte, lut map[uint32][]byte, outDir string) error {

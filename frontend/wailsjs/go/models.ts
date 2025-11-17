@@ -19,10 +19,11 @@ export namespace project {
 	    collaborators: string[];
 	    language: string;
 	    libraries: Record<string, number>;
+	    misc: Record<string, any>;
 	    theme: number;
 	    nodes: NodeAppearance[];
 	    assets: string[];
-	    Program: number[];
+	    program: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new Project(source);
@@ -36,10 +37,11 @@ export namespace project {
 	        this.collaborators = source["collaborators"];
 	        this.language = source["language"];
 	        this.libraries = source["libraries"];
+	        this.misc = source["misc"];
 	        this.theme = source["theme"];
 	        this.nodes = this.convertValues(source["nodes"], NodeAppearance);
 	        this.assets = source["assets"];
-	        this.Program = source["Program"];
+	        this.program = source["program"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

@@ -1,0 +1,25 @@
+<main>
+  <button id="compile">Compile program file</button>
+
+  <script>
+    import * as app from "../../wailsjs/go/desktop/App";
+
+    var defaultPath = "";
+
+    document.addEventListener("DOMContentLoaded", (e) => {
+      const compile = document.getElementById("compile");
+      if (compile) {
+        compile.addEventListener("click", async (e) => {
+          const path = prompt("Enter program file location", defaultPath);
+          if (path) {
+            try {
+              const project = await app.OpenProject(path);
+            } catch (err) {
+              console.error(err);
+            }
+          }
+        });
+      }
+    });
+  </script>
+</main>
