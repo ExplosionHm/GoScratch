@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"log"
-	"opticode/desktop"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -18,7 +17,7 @@ var assets embed.FS
 func main() {
 	log.SetOutput(os.Stdout) // Set wails logging to default std output
 
-	app := desktop.NewApp()
+	app := NewApp()
 	err := wails.Run(&options.App{
 		Title:            "Opticode",
 		Width:            1024,
@@ -31,7 +30,7 @@ func main() {
 		},
 		Bind: []any{
 			app,
-			app.Project,
+			//app.Project,
 		},
 		OnStartup:  app.Initalize,
 		OnShutdown: app.Exit,

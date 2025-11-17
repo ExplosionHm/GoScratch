@@ -3,7 +3,7 @@ package golang
 import (
 	"bytes"
 	"fmt"
-	"opticode/desktop/tree"
+	"opticode/tree"
 )
 
 func (g *Generator) op_import(node *tree.Type1, flags tree.Flag) ([]byte, error) {

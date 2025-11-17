@@ -1,10 +1,12 @@
-package desktop
+package main
+
+// Add build tags
 
 import (
 	"context"
 	"log"
-	"opticode/desktop/compile/golang"
-	"opticode/desktop/project"
+	"opticode/compile/golang"
+	"opticode/project"
 	"time"
 )
 

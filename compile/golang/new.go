@@ -2,7 +2,7 @@ package golang
 
 import (
 	"fmt"
-	"opticode/desktop/tree"
+	"opticode/tree"
 	"sync"
 
 	fb "github.com/google/flatbuffers/go"

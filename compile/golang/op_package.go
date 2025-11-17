@@ -1,7 +1,7 @@
 package golang
 
 import (
-	"opticode/desktop/tree"
+	"opticode/tree"
 )
 
 func (g *Generator) op_package(node *tree.Type1, flags tree.Flag) ([]byte, error) {
