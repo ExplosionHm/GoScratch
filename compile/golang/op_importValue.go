@@ -2,20 +2,20 @@ package golang
 
 import (
 	"bytes"
-	"opticode/tree"
+	schema "opticode/compile/golang/golang"
 )
 
-func (g *Generator) op_importValue(node *tree.Type2, flags tree.Flag) ([]byte, error) {
-	var left *tree.NodeValue
+func (g *Generator) op_importValue(node *schema.BinaryNode, flags schema.Flag) ([]byte, error) {
+	var left *schema.NodeValue
 	node.Left(left)
 
-	var right *tree.NodeValue
+	var right *schema.NodeValue
 	node.Left(right)
 
 	var buf = new(bytes.Buffer)
 
 	// write import alias
-	leftValue, err := g.LookUp(uint32(left.Value()))
+	leftValue, err := g.LookUpStr(uint32(left.Value()))
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func (g *Generator) op_importValue(node *tree.Type2, flags tree.Flag) ([]byte, e
 	// write seperator
 	buf.WriteByte(' ')
 	// write package path
-	rightValue, err := g.LookUp(uint32(left.Value()))
+	rightValue, err := g.LookUpStr(uint32(left.Value()))
 	if err != nil {
 		return nil, err
 	}

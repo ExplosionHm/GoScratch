@@ -30,7 +30,6 @@ func main() {
 		},
 		Bind: []any{
 			app,
-			//app.Project,
 		},
 		OnStartup:  app.Initalize,
 		OnShutdown: app.Exit,

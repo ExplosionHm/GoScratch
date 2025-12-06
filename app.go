@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"log"
 	"opticode/compile/golang"
 	"opticode/project"
@@ -34,15 +35,19 @@ func (a *App) OpenProject(projectFile string) (*project.Project, error) {
 	return project.LoadProjectFromFile(projectFile)
 }
 
-func (a *App) Compile(buf []byte, lut map[uint32][]byte, outDir string) error {
-	start := time.Now()
-	files, err := golang.Compile(&buf, lut)
+func (a *App) Compile(data string, dir string) (uint8, error) {
+	buf, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
-		return err
+		return 2, err
 	}
-	log.Println(len(files))
 
+	start := time.Now()
+	files, err := golang.Compile(&buf)
+	if err != nil {
+		return 4, err
+	}
 	log.Printf("Time elapsed: %dms", time.Since(start).Milliseconds())
+	log.Printf("# of files: %d", len(files))
 
-	return nil
+	return 0, nil
 }

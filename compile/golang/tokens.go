@@ -27,8 +27,8 @@ var tokens = [][]byte{
 }
 
 func (t TokenKind) Bytes() []byte {
-	if uint16(t) > uint16(len(tokens)) {
-		return []byte{}
+	if int(t) >= len(tokens) {
+		return nil
 	}
 	return tokens[t]
 }

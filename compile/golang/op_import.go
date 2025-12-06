@@ -3,19 +3,19 @@ package golang
 import (
 	"bytes"
 	"fmt"
-	"opticode/tree"
+	schema "opticode/compile/golang/golang"
 )
 
-func (g *Generator) op_import(node *tree.Type1, flags tree.Flag) ([]byte, error) {
+func (g *Generator) op_import(node *schema.IndexedNode, flags schema.Flag) ([]byte, error) {
 	length := node.FieldsLength()
 
 	buf := new(bytes.Buffer)
 
 	for i := range length {
-		var field *tree.NodeValue
+		var field *schema.NodeValue
 		node.Fields(field, i)
 
-		if field.Flags()&tree.ValueFlagPointer != 0 {
+		if field.Flags()&schema.ValueFlagPointer != 0 {
 			// is pointer
 			node := g.GetNode(field.Value())
 			if node == nil {

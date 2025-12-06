@@ -1,11 +1,11 @@
 package golang
 
 import (
-	"opticode/tree"
+	schema "opticode/compile/golang/golang"
 )
 
-func (g *Generator) op_package(node *tree.Type1, flags tree.Flag) ([]byte, error) {
-	id, err := g.LookUp(node.Id())
+func (g *Generator) op_package(node *schema.IndexedNode, flags schema.Flag) ([]byte, error) {
+	id, err := g.LookUpStr(node.Id())
 	if err != nil {
 		return nil, err
 	}
